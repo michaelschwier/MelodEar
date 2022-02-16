@@ -433,15 +433,15 @@ function Button(options, command)
   MultiFrameSprite.call(this, {
     x: options.x,
     y: options.y,
-    width: options.width,
-    height: options.height,
+    width: options.width || options.image.naturalWidth / 2,
+    height: options.height || options.image.naturalHeight,
     image: options.image,
     numberOfFrames: 2
   });
-  this.clickAreaX = options.clickAreaX || options.x
-  this.clickAreaY = options.clickAreaY || options.y
-  this.clickAreaWidth = options.clickAreaWidth || options.width
-  this.clickAreaHeigth = options.clickAreaHeigth || options.height
+  this.clickAreaX = options.clickAreaX || this.x
+  this.clickAreaY = options.clickAreaY || this.y
+  this.clickAreaWidth = options.clickAreaWidth || this.width
+  this.clickAreaHeigth = options.clickAreaHeigth || this.height
   this.command = command;
   this.buttonReleaseTime = options.buttonReleaseTime || 0.1;
   this.buttonReleaseCountDown = 0.0;    
@@ -474,6 +474,7 @@ function Button(options, command)
 
   this.handleMouseDown = function(pos)
   { 
+    // console.log("Button Mouse Down", pos, this.clickAreaX, this.clickAreaY, this.clickAreaWidth, this.clickAreaHeigth)
     if (this.isHit(pos.canvasX, pos.canvasY)) {
       this.buttonReleaseCountDown = this.buttonReleaseTime;
       this.command.execute();

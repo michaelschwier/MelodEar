@@ -261,6 +261,8 @@
   resources.addImage("frameBlueFill", "images/frameBlueFill.png")
   resources.addImage("frameGreenFill", "images/frameGreenFill.png")
   resources.addImage("frameRedFill", "images/frameRedFill.png")
+  resources.addImage("keyWhite", "images/keyWhite.png")
+  resources.addImage("keyBlack", "images/keyBlack.png")
   // Translated Images
 
   resources.loadAndCallWhenDone(initGame);
