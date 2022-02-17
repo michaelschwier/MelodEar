@@ -35,9 +35,10 @@ function KeyBoardBuilder(options)
     this.resources = options.resources
     this.audioCache = options.audioCache
 
-    this.build = function()
+    this.build = function(commandReceiver)
     {
         var sceneKeyBoard = []
+        var whiteNotes = ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"]
         keyImage = this.resources.getImage("keyWhite")
         for (var i = 0; i < 8; i++) {
             var whiteKey = new Button({
@@ -47,7 +48,7 @@ function KeyBoardBuilder(options)
                     clickAreaHeight: 300,
                     image: keyImage
                 }, 
-                new DummyCommand())
+                new NotePressedCommand(commandReceiver, whiteNotes[i]))
             sceneKeyBoard.push(whiteKey)
         }
         keyImage = this.resources.getImage("keyBlack")

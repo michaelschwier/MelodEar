@@ -1,16 +1,33 @@
 function GameBoard(options)
 {
+    this.audioCache = options.audioCache
     this.targetNotes = options.targetNotes
-    this.currTry = 0
-    this.currSlotIdx = 2
     this.sceneBoard = options.sceneBoard
     this.sceneWhiteout = options.sceneWhiteout
     this.scene = [this.sceneBoard, this.sceneWhiteout]
+    this.currTry = 0
+    this.currSlotIdx = 1
 
     this.enterNote = function(note)
     {
         this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
         this.currSlotIdx++
+    }
+
+    this.handleNotePressed = function(note)
+    {   
+        if (this.currSlotIdx == 1) {
+            if (this.sceneBoard[this.currTry][this.currSlotIdx].targetNote == note) {
+                this.audioCache[note].play()
+                this.currSlotIdx++
+            }
+        }
+        else if (this.currSlotIdx <= this.targetNotes.length) {
+            this.audioCache[note].play()
+            this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
+            this.currSlotIdx++
+        }
+        
     }
 
     this.update = function(frameTime = 0)
@@ -46,6 +63,7 @@ function GameBoardBuilder(options)
     this.build = function(targetNotes)
     {
         return new GameBoard({
+            audioCache: this.audioCache,
             targetNotes: targetNotes,
             sceneBoard: this.buildBoardScene(targetNotes),
             sceneWhiteout: this.buildWhiteoutScene(targetNotes)
@@ -95,6 +113,7 @@ function Slot(x, y, targetNote, resources, initNote="lines")
     this.x = x
     this.y = y
     this.targetNote = targetNote
+    this.playedNote = ""
     this.resources = resources
     this.noteSprite = new Sprite({
         image: this.resources.getImage(initNote),
@@ -120,12 +139,17 @@ function Slot(x, y, targetNote, resources, initNote="lines")
 
     this.setNote = function(note)
     {
+        this.playedNote = note
         this.noteSprite = new Sprite({
             image: this.resources.getImage(note),
             x: this.x,
             y: this.y
         })
-        this.frameSprite = note == this.targetNote ? this.greenFrame : this.redFrame
+        this.frameSprite = new Sprite({
+            image: this.resources.getImage("frameBlueNoFill"),
+            x: this.x,
+            y: this.y
+        })
     }
 
     this.update = function(frameTime = 0)

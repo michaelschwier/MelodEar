@@ -117,6 +117,43 @@
     }
   }
   
+    // --------------------------------------------------------------------------
+    function IntroPhase() {
+      this.startGame = false;
+  
+      this.handleTouchMove = function(pos)
+      { }
+  
+      this.handleMouseDown = function(pos)
+      { 
+        this.startGame = true;
+        // hack to convince Safari and other browsers to play audio
+        dummyAudio = new Audio("audio/silence.mp3");
+        dummyAudio.play();
+        setupAudioCache();
+      }
+  
+      this.update = function(frameTime = 0.0)
+      {
+      }
+  
+      this.render = function()
+      {
+      }
+  
+      this.getNextGamePhase = function()
+      {
+        if (this.startGame) 
+        {
+          return new MainGamePhase(1);
+        }
+        else {
+          return this;
+        }
+      }
+    }
+    
+    // --------------------------------------------------------------------------
   // --------------------------------------------------------------------------
   function GamePhase(scene) 
   {
@@ -229,7 +266,7 @@
     canvas.height = 3000;
 
     levelCreator = new LevelCreator(resources, audioCache)
-    gamePhase = new MainGamePhase(1);
+    gamePhase = new IntroPhase();
 
     canvas.addEventListener("touchmove", handleTouchMove);
     canvas.addEventListener("touchstart", handleTouchStart);
@@ -256,6 +293,12 @@
   resources.addImage("lines", "images/lines.png");
   resources.addImage("c4", "images/c4.png");
   resources.addImage("d4", "images/d4.png");
+  resources.addImage("e4", "images/e4.png");
+  resources.addImage("f4", "images/f4.png");
+  resources.addImage("g4", "images/g4.png");
+  resources.addImage("a4", "images/a4.png");
+  resources.addImage("b4", "images/b4.png");
+  resources.addImage("c5", "images/c5.png");
   resources.addImage("whiteout", "images/whiteout.png")
   resources.addImage("frameBlueNoFill", "images/frameBlueNoFill.png")
   resources.addImage("frameBlueFill", "images/frameBlueFill.png")

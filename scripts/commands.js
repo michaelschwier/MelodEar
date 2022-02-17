@@ -9,5 +9,13 @@ function DummyCommand(message="") {
   }
 }
 
-// --------------------------------------------------------------------------
+function NotePressedCommand(receiver, note) {
+  this.receiver = receiver
+  this.note = note
+
+  this.execute = function()
+  {
+    this.receiver.handleNotePressed(this.note)
+  }
+}
 
