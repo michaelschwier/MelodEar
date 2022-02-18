@@ -153,7 +153,6 @@
       }
     }
     
-    // --------------------------------------------------------------------------
   // --------------------------------------------------------------------------
   function GamePhase(scene) 
   {
@@ -212,7 +211,6 @@
   // --------------------------------------------------------------------------
   function MainGamePhase(level)
   {
-    document.getElementById("gameContainer").style.backgroundColor="white";
     this.level = level;
     this.finishedDelay = 2.0;
     GamePhase.call(this, levelCreator.getScene(this.level));
@@ -222,6 +220,8 @@
     // {
     //   this.super_update(frameTime);
     // }
+
+    
 
     this.getNextGamePhase = function()
     {
@@ -261,6 +261,8 @@
   // --------------------------------------------------------------------------
   function initGame()
   {
+    document.getElementById("gameContainer").style.backgroundImage="none"; 
+
     canvas = document.getElementById("gameCanvas");
     canvas.width = 2400;
     canvas.height = 3000;

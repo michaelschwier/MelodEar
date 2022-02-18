@@ -15,7 +15,7 @@ function LevelCreator(resources, audioCache)
   this.getScene = function(levelIdx)
   {
     var scene = {}
-    scene.gameBoard = this.gameBoardBuilder.build(["c4", "d4", "c4", "d4"])
+    scene.gameBoard = this.gameBoardBuilder.build(["c4", "e4", "g4", "e4"])
     scene.keyBoard = this.keyBoardBuilder.build(scene.gameBoard)
     return scene
   }

@@ -1,5 +1,15 @@
 function GameBoard(options)
 {
+    const States = Object.freeze({
+        PlayingTargetNotes: Symbol("PlayingTargetNotes"),
+        PlayingUserNotes:   Symbol("PlayingUserNotes"),
+        RevealingUserNotes: Symbol("RevealingUserNotes"),
+        Idle:               Symbol("Idle"),
+        UserInput:          Symbol("UserInput"),
+        UserInputDone:      Symbol("UserInputDone"),
+        Finished:           Symbol("Finished")
+    })
+    this.state = States.PlayingTargetNotes
     this.audioCache = options.audioCache
     this.targetNotes = options.targetNotes
     this.sceneBoard = options.sceneBoard
@@ -7,27 +17,54 @@ function GameBoard(options)
     this.scene = [this.sceneBoard, this.sceneWhiteout]
     this.currTry = 0
     this.currSlotIdx = 1
+    this.targetPlayIdx = 0
+    this.userPlayIdx = this.targetNotes.length
+    this.playCountDown = 1.0
+    this.noteMatches = []
 
-    this.enterNote = function(note)
+    this.playTargetNotes = function(startDelay = 0.0)
     {
-        this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
-        this.currSlotIdx++
+        if (this.state == States.Idle) {
+            this.state = States.PlayingTargetNotes
+            this.targetPlayIdx = 0
+            this.playCountDown = startDelay
+        }
+    }
+
+    this.playUserNotes = function(startDelay = 0.0)
+    {
+        if (((this.state == States.Idle) || (this.state = States.UserInputDone)) && (this.currTry > 0)) {
+            this.state = this.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes
+            this.userPlayIdx = 0
+            this.playCountDown = startDelay
+        }
     }
 
     this.handleNotePressed = function(note)
     {   
-        if (this.currSlotIdx == 1) {
+        if (this.state == States.Idle) {
             if (this.sceneBoard[this.currTry][this.currSlotIdx].targetNote == note) {
                 this.audioCache[note].play()
+                this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
+                this.noteMatches.push([true])
+                this.currSlotIdx++
+                this.state = States.UserInput
+            }
+        }
+        else if (this.state == States.UserInput) {
+            this.audioCache[note].play()
+            var isCorrectNote = this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
+            this.noteMatches[this.currTry].push(isCorrectNote)
+            if (this.currSlotIdx == this.targetNotes.length) {
+                this.currTry++
+                this.currSlotIdx = 1
+                this.state = States.UserInputDone
+                this.playUserNotes(1.0)
+            }
+            else {
                 this.currSlotIdx++
             }
         }
-        else if (this.currSlotIdx <= this.targetNotes.length) {
-            this.audioCache[note].play()
-            this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
-            this.currSlotIdx++
-        }
-        
     }
 
     this.update = function(frameTime = 0)
@@ -39,6 +76,48 @@ function GameBoard(options)
                 }
             }
         }
+        if (this.playCountDown > 0) {
+            this.playCountDown -= frameTime
+        }
+        if (this.state == States.PlayingTargetNotes) {
+            if ((this.targetPlayIdx < this.targetNotes.length) && (this.playCountDown <= 0)) {
+                var note = this.targetNotes[this.targetPlayIdx]
+                this.audioCache[note].play()
+                this.targetPlayIdx++
+                this.playCountDown = 0.5
+            }
+            if (this.targetPlayIdx == this.targetNotes.length) {
+                this.state = States.Idle
+            }
+        }
+        else if ((this.state == States.PlayingUserNotes) || (this.state == States.RevealingUserNotes)) {
+            if ((this.userPlayIdx < this.targetNotes.length) && (this.playCountDown <= 0)) {
+                var slot = this.sceneBoard[this.currTry - 1][1 + this.userPlayIdx]
+                var note = slot.playedNote
+                this.audioCache[note].play()
+                slot.reveal()
+                this.userPlayIdx++
+                this.playCountDown = 0.5
+            }
+            if (this.userPlayIdx == this.targetNotes.length) {
+                if (this.state == States.RevealingUserNotes) {
+                    if (this.noteMatches[this.currTry-1].every(Boolean)) {
+                        this.state = States.Finished
+                    }
+                    else if (this.currTry >= 5) {
+                        this.state = States.Finished
+                    }
+                    else {
+                        this.sceneWhiteout.shift()
+                        this.state = States.Idle
+                    }
+                }
+                else {
+                    this.state = States.Idle
+                }
+            }
+        }
+        // console.log(this.state)
     }
 
     this.render = function(renderContext)
@@ -150,6 +229,17 @@ function Slot(x, y, targetNote, resources, initNote="lines")
             x: this.x,
             y: this.y
         })
+        return this.targetNote == this.playedNote
+    }
+
+    this.reveal = function() 
+    {
+        if (this.targetNote == this.playedNote) {
+            this.frameSprite = this.greenFrame
+        }
+        else {
+            this.frameSprite = this.redFrame
+        }
     }
 
     this.update = function(frameTime = 0)

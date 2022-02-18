@@ -16,7 +16,7 @@ body {
 #gameContainer {
 	position: relative;
 	background-color: white;
-	/* background-image: url("../images/title-01.png"); */
+	background-image: url("../images/loading.png");
 	background-size: 100%;
 	background-repeat: no-repeat;
 	height:100vh;
