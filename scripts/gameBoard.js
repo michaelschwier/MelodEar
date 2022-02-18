@@ -12,6 +12,7 @@ function GameBoard(options)
     this.state = States.PlayingTargetNotes
     this.audioCache = options.audioCache
     this.targetNotes = options.targetNotes
+    this.resultsCollector = options.resultsCollector
     this.sceneBoard = options.sceneBoard
     this.sceneWhiteout = options.sceneWhiteout
     this.scene = [this.sceneBoard, this.sceneWhiteout]
@@ -31,13 +32,22 @@ function GameBoard(options)
         }
     }
 
+    this.handlePlayTargetNotesPressed = function() {
+        this.playTargetNotes()
+    }
+
     this.playUserNotes = function(startDelay = 0.0)
     {
-        if (((this.state == States.Idle) || (this.state = States.UserInputDone)) && (this.currTry > 0)) {
+        if (((this.state == States.Idle) || (this.state == States.UserInputDone)) && (this.currTry > 0)) {
+            console.log("playUserNotes", this.state)
             this.state = this.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes
             this.userPlayIdx = 0
             this.playCountDown = startDelay
         }
+    }
+
+    this.handlePlayUserNotesPressed = function() {
+        this.playUserNotes()
     }
 
     this.handleNotePressed = function(note)
@@ -103,9 +113,17 @@ function GameBoard(options)
                 if (this.state == States.RevealingUserNotes) {
                     if (this.noteMatches[this.currTry-1].every(Boolean)) {
                         this.state = States.Finished
+                        this.resultsCollector.levelFinished({
+                            success: true,
+                            tries: this.currTry
+                        })
                     }
                     else if (this.currTry >= 5) {
                         this.state = States.Finished
+                        this.resultsCollector.levelFinished({
+                            success: false,
+                            tries: this.currTry
+                        })
                     }
                     else {
                         this.sceneWhiteout.shift()
@@ -139,11 +157,12 @@ function GameBoardBuilder(options)
     this.resources = options.resources
     this.audioCache = options.audioCache
 
-    this.build = function(targetNotes)
+    this.build = function(targetNotes, resultsCollector)
     {
         return new GameBoard({
             audioCache: this.audioCache,
             targetNotes: targetNotes,
+            resultsCollector: resultsCollector,
             sceneBoard: this.buildBoardScene(targetNotes),
             sceneWhiteout: this.buildWhiteoutScene(targetNotes)
         })
@@ -199,9 +218,8 @@ function Slot(x, y, targetNote, resources, initNote="lines")
         x: this.x,
         y: this.y
     })
-    frame = initNote == "lines" ? "frameBlueFill" : "frameBlueNoFill"
     this.frameSprite = new Sprite({
-        image: this.resources.getImage(frame),
+        image: this.resources.getImage("frameBlueLightFill"),
         x: this.x,
         y: this.y
     })

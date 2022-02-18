@@ -19,3 +19,21 @@ function NotePressedCommand(receiver, note) {
   }
 }
 
+function PlayTargetNotesCommand(receiver) {
+  this.receiver = receiver
+
+  this.execute = function()
+  {
+    this.receiver.handlePlayTargetNotesPressed()
+  }
+}
+
+function PlayUserNotesCommand(receiver) {
+  this.receiver = receiver
+
+  this.execute = function()
+  {
+    this.receiver.handlePlayUserNotesPressed()
+  }
+}
+

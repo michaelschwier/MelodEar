@@ -209,19 +209,28 @@
   }
 
   // --------------------------------------------------------------------------
-  function MainGamePhase(level)
+  function MainGamePhase(startLevel)
   {
-    this.level = level;
-    this.finishedDelay = 2.0;
-    GamePhase.call(this, levelCreator.getScene(this.level));
+    this.level = startLevel;
+    this.results = []
+    this.finishedDelay = 1.0;
+    GamePhase.call(this, levelCreator.getScene(this.level, this));
 
+
+    this.levelFinished = function(levelResult) {
+      this.results.push(levelResult)
+      console.log(this.results)
+      if (levelResult.success && (this.level < 5)) {
+          this.level++
+          this.scene = levelCreator.getScene(this.level, this)
+      }
+    }
+    
     // this.super_update = this.update;
     // this.update = function(frameTime)
     // {
     //   this.super_update(frameTime);
     // }
-
-    
 
     this.getNextGamePhase = function()
     {
@@ -303,11 +312,14 @@
   resources.addImage("c5", "images/c5.png");
   resources.addImage("whiteout", "images/whiteout.png")
   resources.addImage("frameBlueNoFill", "images/frameBlueNoFill.png")
+  resources.addImage("frameBlueLightFill", "images/frameBlueLightFill.png")
   resources.addImage("frameBlueFill", "images/frameBlueFill.png")
   resources.addImage("frameGreenFill", "images/frameGreenFill.png")
   resources.addImage("frameRedFill", "images/frameRedFill.png")
   resources.addImage("keyWhite", "images/keyWhite.png")
   resources.addImage("keyBlack", "images/keyBlack.png")
+  resources.addImage("playTarget", "images/playTarget.png")
+  resources.addImage("playUser", "images/playUser.png")
   // Translated Images
 
   resources.loadAndCallWhenDone(initGame);

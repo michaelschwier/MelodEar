@@ -38,6 +38,16 @@ function KeyBoardBuilder(options)
     this.build = function(commandReceiver)
     {
         var sceneKeyBoard = []
+        sceneKeyBoard.push(new Button({
+            x: 0,
+            y: 2200,
+            image: this.resources.getImage("playTarget")
+        }, new PlayTargetNotesCommand(commandReceiver)))
+        sceneKeyBoard.push(new Button({
+            x: 1800,
+            y: 2200,
+            image: this.resources.getImage("playUser")
+        }, new PlayUserNotesCommand(commandReceiver)))
         var whiteNotes = ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"]
         keyImage = this.resources.getImage("keyWhite")
         for (var i = 0; i < 8; i++) {
