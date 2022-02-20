@@ -70,6 +70,8 @@ p {
 .closeModalButton {
 	float:right;
 	color: #888;
+	/* font-size: 28px; */
+	font-weight: bold;
 }
   
 .closeModalButton:hover,
