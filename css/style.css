@@ -13,6 +13,16 @@ body {
 	background-color: black;
 }
 
+h3 {
+    padding-top: 10px;
+	padding-bottom: 5px;
+    margin: 0px;
+}
+
+p {
+	text-align: justify;
+}
+
 #gameContainer {
 	position: relative;
 	background-color: white;
@@ -34,4 +44,57 @@ body {
 	padding: 0;
 	width: 100%;
 	height: 100%;
+}
+
+:root {
+    --modal-width: 75vh;
+}
+
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	font-family: sans-serif;
+	font-size: smaller;
+}
+  
+.modalContent {
+	background-color: white;
+	margin: 1% auto;
+	padding: 10px;
+	border: 1px solid #888;
+	width: var(--modal-width);
+}
+
+.modalHeader {
+	margin: 0;
+    padding: 0;
+	border: 0;
+    position: relative;
+    display: inline-block;
+	width: 100%; /* Full width */
+}
+
+.closeModalButton {
+    position: absolute;
+    top: 0;
+    right: 0;	
+	color: #888;
+	/* float: right; */
+	font-size: 28px;
+	font-weight: bold;
+}
+  
+.closeModalButton:hover,
+.closeModalButton:focus {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
 }

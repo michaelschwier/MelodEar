@@ -11,6 +11,14 @@
   var gameStatusCreator;
   var mouseIsPressed = false;
 
+  // ----- Dialoges ---------------------------------------------------------------------
+  var rulesModal = document.getElementById("rulesModal");
+  var rulesCloseButton = document.getElementById("rulesCloseButton");
+
+  rulesCloseButton.onclick = function() {
+    rulesModal.style.display = "none";
+  }
+
   // --------------------------------------------------------------------------
   function setupAudioCache()
   {
@@ -36,10 +44,12 @@
     if (newWidthToHeight > referenceWidthToHeight) {
         gameContainer.style.height = '100vh';
         gameContainer.style.width = '80vh';
+        document.documentElement.style.setProperty('--modal-width', '75vh');
     } 
     else {
       gameContainer.style.height = '125vw';
       gameContainer.style.width = '100vw';
+      document.documentElement.style.setProperty('--modal-width', '94vw');
     }
   }
 
@@ -271,6 +281,7 @@
   // --------------------------------------------------------------------------
   function initGame()
   {
+    rulesModal.style.display = "block";
     document.getElementById("gameContainer").style.backgroundImage="url(\"images/startGame.png\")" 
 
     canvas = document.getElementById("gameCanvas");

@@ -8,6 +8,42 @@
     <div id="gameContainer">
       <canvas id="gameCanvas"></canvas>
     </div>
+    <!-- Modal Boxes -->
+    <div id="rulesModal" class="modal">
+      <div class="modalContent">
+        <div class="modalHeader">
+          <span id="rulesCloseButton" class="closeModalButton">&times;</span>
+          <h3>How to play</h3>
+        </div>
+        <hr>
+        <div class="modalBody">
+          <p>Guess the secret melody that you hear. For reference the first note of the melody is already revealed.</p>
+          <p>Enter your melody guess on the keyboard, including the first note.</p>
+          <p>After each guess, the color of tiles will change to show which notes were correct and which were wrong.</p>
+          <p>Reach the next level by guessing the correct melody in 5 or less tries. There are 5 levels, the first has a 2-note melody, the last a 6-note melody.</p>
+          <hr>
+          <p><b>Examples</b></p>
+          <p>
+            <img src="images/exampleIdle.png" alt="Example: Waiting for user input" style="height:10vh;">
+            <br>
+            Ready for user input. The first note is already revealed as reference.
+          </p>
+          <p>
+            <img src="images/exampleWrong.png" alt="Example: User input wrong" style="height:10vh;">
+            <br>
+            The third note was wrong, try again.
+          </p>
+          <p>
+            <img src="images/exampleCorrect.png" alt="Example: User input correct" style="height:10vh;">
+            <br>
+            All notes were correct. Advance to the next level.
+          </p>
+          <hr>
+          <p><b>A new set of MelodEars will be available each day.</b></p>          
+        </div>
+      </div>
+    </div>
+    <!-- Scripts -->
     <script src="scripts/howler/howler.core.min.js?v=2.1.2"></script>
     <script src="scripts/utils.js?v=0.1.0"></script>
     <script src="scripts/crashGraphicsEngine.js?v=0.1.0"></script>
