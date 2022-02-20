@@ -67,23 +67,9 @@ p {
 	width: var(--modal-width);
 }
 
-.modalHeader {
-	margin: 0;
-    padding: 0;
-	border: 0;
-    position: relative;
-    display: inline-block;
-	width: 100%; /* Full width */
-}
-
 .closeModalButton {
-    position: absolute;
-    top: 0;
-    right: 0;	
+	float:right;
 	color: #888;
-	/* float: right; */
-	font-size: 28px;
-	font-weight: bold;
 }
   
 .closeModalButton:hover,
