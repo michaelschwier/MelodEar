@@ -15,7 +15,7 @@
   var rulesModal = document.getElementById("rulesModal");
   var rulesCloseButton = document.getElementById("rulesCloseButton");
 
-  rulesCloseButton.onclick = function() {
+  rulesModal.onclick = function() {
     rulesModal.style.display = "none";
   }
 
