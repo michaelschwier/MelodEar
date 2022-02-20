@@ -482,4 +482,31 @@ function Button(options, command)
   }
 }
 
+function ButtonLimitedClicks(options, command)
+{
+  Button.call(this, options, command)
+  this.maxClicks = options.maxClicks
+  this.currClicks = 0
+  this.mainImage = options.image
+  this.inactiveImage = options.inactiveImage
 
+  this.reset = function()
+  {
+    this.currClicks = 0
+    this.image = this.mainImage
+  }
+
+  this.Button_handleMouseDowns = this.handleMouseDown
+  this.handleMouseDown = function(pos)
+  {
+    if (this.isHit(pos.canvasX, pos.canvasY)) {
+      if (this.currClicks < this.maxClicks) {
+        this.Button_handleMouseDowns(pos)
+      }
+      this.currClicks++
+      if (this.currClicks == this.maxClicks) {
+        this.image = this.inactiveImage
+      }
+    }
+  }
+}

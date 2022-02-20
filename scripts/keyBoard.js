@@ -3,6 +3,18 @@ function KeyBoard(options)
     this.sceneKeyBoard = options.sceneKeyBoard
     this.scene = [this.sceneKeyBoard]
 
+    this.stateChanged = function(oldState, newState)
+    {
+        if ((oldState == States.RevealingUserNotes) && (newState == States.Idle)) {
+            for (var layer of this.scene) {
+                for (var node of layer) {
+                    if ("reset" in node)
+                    node.reset()
+                }
+            }    
+        }
+    }
+
     this.update = function(frameTime = 0)
     {
         for (var layer of this.scene) {
@@ -38,15 +50,19 @@ function KeyBoardBuilder(options)
     this.build = function(commandReceiver)
     {
         var sceneKeyBoard = []
-        sceneKeyBoard.push(new Button({
+        sceneKeyBoard.push(new ButtonLimitedClicks({
             x: 0,
             y: 2200,
-            image: this.resources.getImage("playTarget")
+            image: this.resources.getImage("playTarget"),
+            inactiveImage: this.resources.getImage("playTargetInactive"),
+            maxClicks: 1
         }, new PlayTargetNotesCommand(commandReceiver)))
-        sceneKeyBoard.push(new Button({
+        sceneKeyBoard.push(new ButtonLimitedClicks({
             x: 1800,
             y: 2200,
-            image: this.resources.getImage("playUser")
+            image: this.resources.getImage("playUser"),
+            inactiveImage: this.resources.getImage("playTargetInactive"),
+            maxClicks: 1
         }, new PlayUserNotesCommand(commandReceiver)))
         var whiteNotes = ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"]
         keyImage = this.resources.getImage("keyWhite")

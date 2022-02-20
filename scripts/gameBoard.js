@@ -1,14 +1,15 @@
+const States = Object.freeze({
+    PlayingTargetNotes: Symbol("PlayingTargetNotes"),
+    PlayingUserNotes:   Symbol("PlayingUserNotes"),
+    RevealingUserNotes: Symbol("RevealingUserNotes"),
+    Idle:               Symbol("Idle"),
+    UserInput:          Symbol("UserInput"),
+    UserInputDone:      Symbol("UserInputDone"),
+    Finished:           Symbol("Finished")
+})
+
 function GameBoard(options)
 {
-    const States = Object.freeze({
-        PlayingTargetNotes: Symbol("PlayingTargetNotes"),
-        PlayingUserNotes:   Symbol("PlayingUserNotes"),
-        RevealingUserNotes: Symbol("RevealingUserNotes"),
-        Idle:               Symbol("Idle"),
-        UserInput:          Symbol("UserInput"),
-        UserInputDone:      Symbol("UserInputDone"),
-        Finished:           Symbol("Finished")
-    })
     this.state = States.PlayingTargetNotes
     this.audioCache = options.audioCache
     this.targetNotes = options.targetNotes
@@ -22,11 +23,27 @@ function GameBoard(options)
     this.userPlayIdx = this.targetNotes.length
     this.playCountDown = 1.0
     this.noteMatches = []
+    this.stateChangeListeners = []
+
+    this.addStateChangeListener = function(listener)
+    {
+        this.stateChangeListeners.push(listener)
+    }
+
+    this.setState = function(newState)
+    {
+        var oldState = this.state
+        this.state = newState
+        for (var listener of this.stateChangeListeners) {
+            listener.stateChanged(oldState, newState)
+        }
+        console.log("state changed:", oldState, newState)
+    }
 
     this.playTargetNotes = function(startDelay = 0.0)
     {
         if (this.state == States.Idle) {
-            this.state = States.PlayingTargetNotes
+            this.setState(States.PlayingTargetNotes)
             this.targetPlayIdx = 0
             this.playCountDown = startDelay
         }
@@ -39,8 +56,7 @@ function GameBoard(options)
     this.playUserNotes = function(startDelay = 0.0)
     {
         if (((this.state == States.Idle) || (this.state == States.UserInputDone)) && (this.currTry > 0)) {
-            console.log("playUserNotes", this.state)
-            this.state = this.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes
+            this.setState(this.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes)
             this.userPlayIdx = 0
             this.playCountDown = startDelay
         }
@@ -58,7 +74,7 @@ function GameBoard(options)
                 this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
                 this.noteMatches.push([true])
                 this.currSlotIdx++
-                this.state = States.UserInput
+                this.setState(States.UserInput)
             }
         }
         else if (this.state == States.UserInput) {
@@ -68,7 +84,7 @@ function GameBoard(options)
             if (this.currSlotIdx == this.targetNotes.length) {
                 this.currTry++
                 this.currSlotIdx = 1
-                this.state = States.UserInputDone
+                this.setState(States.UserInputDone)
                 this.playUserNotes(1.0)
             }
             else {
@@ -97,7 +113,7 @@ function GameBoard(options)
                 this.playCountDown = 0.5
             }
             if (this.targetPlayIdx == this.targetNotes.length) {
-                this.state = States.Idle
+                this.setState(States.Idle)
             }
         }
         else if ((this.state == States.PlayingUserNotes) || (this.state == States.RevealingUserNotes)) {
@@ -111,27 +127,29 @@ function GameBoard(options)
             }
             if (this.userPlayIdx == this.targetNotes.length) {
                 if (this.state == States.RevealingUserNotes) {
-                    if (this.noteMatches[this.currTry-1].every(Boolean)) {
-                        this.state = States.Finished
-                        this.resultsCollector.levelFinished({
-                            success: true,
-                            tries: this.currTry
-                        })
-                    }
-                    else if (this.currTry >= 5) {
-                        this.state = States.Finished
-                        this.resultsCollector.levelFinished({
-                            success: false,
-                            tries: this.currTry
-                        })
-                    }
-                    else {
-                        this.sceneWhiteout.shift()
-                        this.state = States.Idle
+                    if (this.playCountDown <= 0) {
+                        if (this.noteMatches[this.currTry-1].every(Boolean)) {
+                            this.setState(States.Finished)
+                            this.resultsCollector.levelFinished({
+                                success: true,
+                                tries: this.currTry
+                            })
+                        }
+                        else if (this.currTry >= 5) {
+                            this.setState(States.Finished)
+                            this.resultsCollector.levelFinished({
+                                success: false,
+                                tries: this.currTry
+                            })
+                        }
+                        else {
+                            this.sceneWhiteout.shift()
+                            this.setState(States.Idle)
+                        }
                     }
                 }
                 else {
-                    this.state = States.Idle
+                    this.setState(States.Idle)
                 }
             }
         }

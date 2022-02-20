@@ -211,6 +211,7 @@
   // --------------------------------------------------------------------------
   function MainGamePhase(startLevel)
   {
+    document.getElementById("gameContainer").style.backgroundImage="none"
     this.level = startLevel;
     this.results = []
     this.finishedDelay = 1.0;
@@ -270,7 +271,7 @@
   // --------------------------------------------------------------------------
   function initGame()
   {
-    document.getElementById("gameContainer").style.backgroundImage="none"; 
+    document.getElementById("gameContainer").style.backgroundImage="url(\"images/startGame.png\")" 
 
     canvas = document.getElementById("gameCanvas");
     canvas.width = 2400;
@@ -319,6 +320,7 @@
   resources.addImage("keyWhite", "images/keyWhite.png")
   resources.addImage("keyBlack", "images/keyBlack.png")
   resources.addImage("playTarget", "images/playTarget.png")
+  resources.addImage("playTargetInactive", "images/playTargetInactive.png")
   resources.addImage("playUser", "images/playUser.png")
   // Translated Images
 
