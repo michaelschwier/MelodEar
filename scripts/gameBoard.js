@@ -107,8 +107,10 @@ function GameBoard(options)
         }
         if (this.state == States.PlayingTargetNotes) {
             if ((this.targetPlayIdx < this.targetNotes.length) && (this.playCountDown <= 0)) {
+                var slot = this.sceneBoard[this.currTry][1 + this.targetPlayIdx]
                 var note = this.targetNotes[this.targetPlayIdx]
                 this.audioCache[note].play()
+                slot.highlight()
                 this.targetPlayIdx++
                 this.playCountDown = 0.5
             }
@@ -228,28 +230,33 @@ function Slot(x, y, targetNote, resources, initNote="lines")
 {
     this.x = x
     this.y = y
+    this.zoomAnimationSteps = [0.95, 0.9, 0.95, 1.0, 1.05, 1.1, 1.05, 1.0]
     this.targetNote = targetNote
     this.playedNote = ""
     this.resources = resources
     this.noteSprite = new Sprite({
         image: this.resources.getImage(initNote),
         x: this.x,
-        y: this.y
+        y: this.y,
+        zoomSteps: this.zoomAnimationSteps
     })
-    this.frameSprite = new Sprite({
+    this.frameSprite = new ZoomAnimationSprite({
         image: this.resources.getImage("frameBlueLightFill"),
         x: this.x,
-        y: this.y
+        y: this.y,
+        zoomSteps: this.zoomAnimationSteps
     })
-    this.greenFrame = new Sprite({
+    this.greenFrame = new ZoomAnimationSprite({
         image: this.resources.getImage("frameGreenFill"),
         x: this.x,
-        y: this.y
+        y: this.y,
+        zoomSteps: this.zoomAnimationSteps
     })
-    this.redFrame = new Sprite({
+    this.redFrame = new ZoomAnimationSprite({
         image: this.resources.getImage("frameRedFill"),
         x: this.x,
-        y: this.y
+        y: this.y,
+        zoomSteps: this.zoomAnimationSteps
     })
 
     this.setNote = function(note)
@@ -260,11 +267,13 @@ function Slot(x, y, targetNote, resources, initNote="lines")
             x: this.x,
             y: this.y
         })
-        this.frameSprite = new Sprite({
+        this.frameSprite = new ZoomAnimationSprite({
             image: this.resources.getImage("frameBlueNoFill"),
             x: this.x,
-            y: this.y
+            y: this.y,
+            zoomSteps: this.zoomAnimationSteps
         })
+        this.highlight()
         return this.targetNote == this.playedNote
     }
 
@@ -276,6 +285,12 @@ function Slot(x, y, targetNote, resources, initNote="lines")
         else {
             this.frameSprite = this.redFrame
         }
+        this.highlight()
+    }
+
+    this.highlight = function()
+    {
+        this.frameSprite.play()
     }
 
     this.update = function(frameTime = 0)
