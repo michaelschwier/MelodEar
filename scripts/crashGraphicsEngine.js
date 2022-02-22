@@ -155,33 +155,45 @@ function ZoomAnimationSprite(options)
   Sprite.call(this, options)
   this.zoomSteps = options.zoomSteps
   this.updateRate = options.updateRate || 0.02;
-  this.frameIdx = this.zoomSteps.length
+  this.frameIdx = 0
   this.currFrameTime = 0;
   this.origX = this.x
   this.origY = this.y
   this.origWidth = this.width
   this.origHeight = this.height
+  this.zoomImage = function()
+  {
+    var zoom = this.zoomSteps[this.frameIdx]
+    this.width = this.origWidth * zoom
+    this.height = this.origHeight * zoom
+    this.x = this.origX + ((this.origWidth - this.width) / 2)
+    this.y = this.origY + ((this.origHeight - this.height) / 2)
+  }
+  this.zoomImage()
 
   this.update = function(frameTime = 0)
   { 
-    if (this.frameIdx < this.zoomSteps.length) {
-      this.currFrameTime += frameTime
-      if (this.currFrameTime > this.updateRate) {
-        this.currFrameTime = 0
-        var zoom = this.zoomSteps[this.frameIdx]
-        this.width = this.origWidth * zoom
-        this.height = this.origHeight * zoom
-        this.x = this.origX + ((this.origWidth - this.width) / 2)
-        this.y = this.origY + ((this.origHeight - this.height) / 2)
+    if ((this.frameIdx > 0)  && (this.frameIdx < this.zoomSteps.length)) {
+      this.currFrameTime -= frameTime
+      if (this.currFrameTime < 0) {
+        this.currFrameTime = this.updateRate
+        this.zoomImage()
         this.frameIdx++
       }
     }
   }
 
-  this.play = function()
+  this.setZoomSteps = function(zoomSteps)
   {
-    this.currFrameTime = this.updateRate
+    this.zoomSteps = zoomSteps
     this.frameIdx = 0
+    this.zoomImage()
+  }
+
+  this.play = function(startDelay=0)
+  {
+    this.currFrameTime = startDelay
+    this.frameIdx = 1
   }
 }
 

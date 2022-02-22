@@ -93,6 +93,16 @@ function GameBoard(options)
         }
     }
 
+    this.fadeout = function()
+    {
+        for (var y = 0; y < 5; y++) {
+            for (var x = 1; x <= this.targetNotes.length; x++) {
+                console.log(y,x)
+                this.sceneBoard[y][x].fadeout((4-y)*0.05 + (this.targetNotes.length-x)*0.08)
+            }
+        }
+    }
+
     this.update = function(frameTime = 0)
     {
         for (var layer of this.scene) {
@@ -136,6 +146,7 @@ function GameBoard(options)
                                 success: true,
                                 tries: this.currTry
                             })
+                            this.fadeout()
                         }
                         else if (this.currTry >= 5) {
                             this.setState(States.Finished)
@@ -198,9 +209,9 @@ function GameBoardBuilder(options)
                 x: 150,
                 y: 400 * y
             }))
-            sceneRow.push(new Slot(450, 400 * y, targetNotes[0], this.resources, targetNotes[0]))
+            sceneRow.push(new Slot(450, 400 * y, targetNotes[0], this.resources, y*0.05, targetNotes[0]))
             for (var x = 1; x < targetNotes.length; x++) {
-                sceneRow.push(new Slot(450 + (x * 300), 400 * y, targetNotes[x], this.resources))
+                sceneRow.push(new Slot(450 + (x * 300), 400 * y, targetNotes[x], this.resources, y*0.05 + x*0.08))
             }
             sceneBoard.push(sceneRow)
         }
@@ -226,52 +237,58 @@ function GameBoardBuilder(options)
 }
 
 
-function Slot(x, y, targetNote, resources, initNote="lines")
+function Slot(x, y, targetNote, resources, initAnimationDelay=0, initNote="lines")
 {
     this.x = x
     this.y = y
-    this.zoomAnimationSteps = [0.95, 0.9, 0.95, 1.0, 1.05, 1.1, 1.05, 1.0]
+    this.initAnimationSteps = [0.0, 0.4, 0.7, 0.85, 0.95, 1.0]
+    this.highlightAnimationSteps = [1.0, 0.95, 0.9, 0.95, 1.0, 1.05, 1.1, 1.05, 1.0]
+    this.fadeoutAnimationSteps = [1.0, 0.95, 0.85, 0.7, 0.4, 0.0]
     this.targetNote = targetNote
     this.playedNote = ""
     this.resources = resources
-    this.noteSprite = new Sprite({
+    this.noteSprite = new ZoomAnimationSprite({
         image: this.resources.getImage(initNote),
         x: this.x,
         y: this.y,
-        zoomSteps: this.zoomAnimationSteps
+        zoomSteps: this.initAnimationSteps
     })
+    this.noteSprite.play(initAnimationDelay)
     this.frameSprite = new ZoomAnimationSprite({
         image: this.resources.getImage("frameBlueLightFill"),
         x: this.x,
         y: this.y,
-        zoomSteps: this.zoomAnimationSteps
+        zoomSteps: this.initAnimationSteps
     })
+    this.frameIsInHighlightAnimationMode = false
+    this.frameSprite.play(initAnimationDelay)
     this.greenFrame = new ZoomAnimationSprite({
         image: this.resources.getImage("frameGreenFill"),
         x: this.x,
         y: this.y,
-        zoomSteps: this.zoomAnimationSteps
+        zoomSteps: this.highlightAnimationSteps
     })
     this.redFrame = new ZoomAnimationSprite({
         image: this.resources.getImage("frameRedFill"),
         x: this.x,
         y: this.y,
-        zoomSteps: this.zoomAnimationSteps
+        zoomSteps: this.highlightAnimationSteps
     })
 
     this.setNote = function(note)
     {
         this.playedNote = note
-        this.noteSprite = new Sprite({
+        this.noteSprite = new ZoomAnimationSprite({
             image: this.resources.getImage(note),
             x: this.x,
-            y: this.y
+            y: this.y,
+            zoomSteps: [1.0]
         })
         this.frameSprite = new ZoomAnimationSprite({
             image: this.resources.getImage("frameBlueNoFill"),
             x: this.x,
             y: this.y,
-            zoomSteps: this.zoomAnimationSteps
+            zoomSteps: this.highlightAnimationSteps
         })
         this.highlight()
         return this.targetNote == this.playedNote
@@ -290,7 +307,19 @@ function Slot(x, y, targetNote, resources, initNote="lines")
 
     this.highlight = function()
     {
+        if (!this.frameIsInHighlightAnimationMode) {
+            this.frameSprite.setZoomSteps(this.highlightAnimationSteps)
+            this.frameIsInHighlightAnimationMode = true
+        }
         this.frameSprite.play()
+    }
+
+    this.fadeout = function(delay=0)
+    {
+        this.noteSprite.setZoomSteps(this.fadeoutAnimationSteps)
+        this.frameSprite.setZoomSteps(this.fadeoutAnimationSteps)
+        this.noteSprite.play(delay)
+        this.frameSprite.play(delay)
     }
 
     this.update = function(frameTime = 0)
