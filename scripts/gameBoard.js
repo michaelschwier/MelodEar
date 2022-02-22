@@ -5,6 +5,7 @@ const States = Object.freeze({
     Idle:               Symbol("Idle"),
     UserInput:          Symbol("UserInput"),
     UserInputDone:      Symbol("UserInputDone"),
+    FadeOut:            Symbol("FadeOut"),
     Finished:           Symbol("Finished")
 })
 
@@ -140,20 +141,10 @@ function GameBoard(options)
             if (this.userPlayIdx == this.targetNotes.length) {
                 if (this.state == States.RevealingUserNotes) {
                     if (this.playCountDown <= 0) {
-                        if (this.noteMatches[this.currTry-1].every(Boolean)) {
-                            this.setState(States.Finished)
-                            this.resultsCollector.levelFinished({
-                                success: true,
-                                tries: this.currTry
-                            })
+                        if (this.noteMatches[this.currTry-1].every(Boolean) || (this.currTry >= 5)) {
+                            this.setState(States.FadeOut)
+                            this.playCountDown = 0.8
                             this.fadeout()
-                        }
-                        else if (this.currTry >= 5) {
-                            this.setState(States.Finished)
-                            this.resultsCollector.levelFinished({
-                                success: false,
-                                tries: this.currTry
-                            })
                         }
                         else {
                             this.sceneWhiteout.shift()
@@ -163,6 +154,24 @@ function GameBoard(options)
                 }
                 else {
                     this.setState(States.Idle)
+                }
+            }
+        }
+        else if (this.state == States.FadeOut) {
+            if (this.playCountDown <= 0) {
+                if (this.noteMatches[this.currTry-1].every(Boolean)) {
+                    this.setState(States.Finished)
+                    this.resultsCollector.levelFinished({
+                        success: true,
+                        tries: this.currTry
+                    })
+                }
+                else if (this.currTry >= 5) {
+                    this.setState(States.Finished)
+                    this.resultsCollector.levelFinished({
+                        success: false,
+                        tries: this.currTry
+                    })
                 }
             }
         }
