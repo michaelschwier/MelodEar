@@ -38,7 +38,7 @@ function GameBoard(options)
         for (var listener of this.stateChangeListeners) {
             listener.stateChanged(oldState, newState)
         }
-        console.log("state changed:", oldState, newState)
+        // console.log("state changed:", oldState, newState)
     }
 
     this.playTargetNotes = function(startDelay = 0.0)
@@ -98,7 +98,6 @@ function GameBoard(options)
     {
         for (var y = 0; y < 5; y++) {
             for (var x = 1; x <= this.targetNotes.length; x++) {
-                console.log(y,x)
                 this.sceneBoard[y][x].fadeout((4-y)*0.05 + (this.targetNotes.length-x)*0.08)
             }
         }
