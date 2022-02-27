@@ -162,6 +162,7 @@ function GameBoard(options)
                 if (this.noteMatches[this.currTry-1].every(Boolean)) {
                     this.setState(States.Finished)
                     this.resultsCollector.levelFinished({
+                        noNotes: this.targetNotes.length,
                         success: true,
                         tries: this.currTry
                     })
@@ -169,6 +170,7 @@ function GameBoard(options)
                 else if (this.currTry >= 5) {
                     this.setState(States.Finished)
                     this.resultsCollector.levelFinished({
+                        noNotes: this.targetNotes.length,
                         success: false,
                         tries: this.currTry
                     })

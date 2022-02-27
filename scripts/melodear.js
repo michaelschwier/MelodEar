@@ -10,13 +10,35 @@
   var levelCreator;
   var gameStatusCreator;
   var mouseIsPressed = false;
+  var resultsShareText = ""
 
   // ----- Dialoges ---------------------------------------------------------------------
   var rulesModal = document.getElementById("rulesModal");
   var rulesCloseButton = document.getElementById("rulesCloseButton");
-
   rulesModal.onclick = function() {
     rulesModal.style.display = "none";
+  }
+
+  var resultsModal = document.getElementById("resultsModal")
+  resultsModal.onclick = function() {
+    resultsModal.style.display = "none";
+  }
+  var shareButton = document.getElementById("shareButton")
+  shareButton.onclick = function(event) {
+    event.stopImmediatePropagation()
+    if (navigator.share) {
+      navigator.share({
+        title: 'MelodEar',
+        text: resultsShareText,
+        // url: 'https://melodear-game.com/',
+      })
+        .then(() => console.log('Successful share'))
+        .catch((error) => console.log('Error sharing', error));
+    }
+    else {
+      console.log("no navigator.share", navigator.share)
+      navigator.clipboard.writeText(resultsShareText);
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -221,6 +243,8 @@
   // --------------------------------------------------------------------------
   function MainGamePhase(startLevel)
   {
+    showResults([{noNotes: 2, success: true, tries: 3}])
+
     document.getElementById("gameContainer").style.backgroundImage="none"
     this.level = startLevel;
     this.results = []
@@ -234,6 +258,9 @@
       if (levelResult.success && (this.level < 5)) {
           this.level++
           this.scene = levelCreator.getScene(this.level, this)
+      }
+      else {
+        showResults(this.results)
       }
     }
     
@@ -250,6 +277,47 @@
 
   }
   
+
+  // --------------------------------------------------------------------------
+  function showResults(results)
+  {
+    noSucesses = results.length - 1
+    noSucesses += results[noSucesses].success ? 1 : 0
+    if (noSucesses > 0) {
+      document.getElementById("resultsTitle").textContent = "Congratulations, you finished Level " + noSucesses
+    }
+    else {
+      document.getElementById("resultsTitle").textContent = "Sorry, better luck next time!"
+    }
+    content = "<table><tr><th>Level</th><th>Finished</th><th>Tries</th></tr>"
+    for (var i = 0; i < 5; i++) {
+      if (i < results.length) {
+        content += "<tr><td>" + (i + 1) + "</td><td>" + (results[i].success ? "Yes" : "No") + "</td><td>" + results[i].tries + "</td></tr>"
+      }
+      else {
+        content += "<tr><td>" + (i + 1) + "</td><td>No</td><td>N/A</td></tr>"
+      }
+    }
+    content += "</table>"
+    document.getElementById("resultsResults").innerHTML = content
+
+    uNote = " \u2669"
+    uRepLeft = "\u{1D106}"
+    uRepRight = " \u{1D107}"
+    uTimes = " \u{D7}"
+    resultsShareText = "MelodEar ??? " + noSucesses + "/5\n\n"
+    for (var r of results) {
+      if (r.success) {
+        resultsShareText += uRepLeft
+        for (var n = 0; n < r.noNotes; n++) {
+          resultsShareText += uNote
+        }
+        resultsShareText += uRepRight + uTimes + r.tries + "\n"
+      }
+    }
+    resultsModal.style.display = "block";
+  }
+
 
   // --------------------------------------------------------------------------
   function getPassedFrameTimeInSeconds(timeStamp)
