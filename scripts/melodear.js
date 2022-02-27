@@ -27,9 +27,7 @@
   shareButton.onclick = function(event) {
     event.stopImmediatePropagation()
     shareRecord = {
-      title: "MelodEar",
       text: resultsShareText,
-      url: "https://michaelschwier.github.io/MelodEar/index.html",
     }
     if (isMobile() && !(navigator.userAgent.toLowerCase().indexOf("firefox")>-1) && navigator.share && navigator.canShare && navigator.canShare(shareRecord)) {
       navigator.share(shareRecord)
