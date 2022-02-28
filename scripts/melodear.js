@@ -38,6 +38,19 @@
     }
   }
 
+  var cookiePolicyModal = document.getElementById("cookiePolicyModal")
+  var acceptCookiesButton = document.getElementById("acceptCookiesButton")
+  acceptCookiesButton.onclick = function(event) {
+    event.stopImmediatePropagation()
+    setCookie("cookiesAllowed", "True", 1000)
+    cookiePolicyModal.style.display = "none"
+  }
+  var rejectCookiesButton = document.getElementById("rejectCookiesButton")
+  rejectCookiesButton.onclick = function(event) {
+    event.stopImmediatePropagation()
+    cookiePolicyModal.style.display = "none"
+  }
+
   // --------------------------------------------------------------------------
   isMobile = function() {
     let check = false;
@@ -247,7 +260,7 @@
   // --------------------------------------------------------------------------
   function MainGamePhase(startLevel)
   {
-    showResults([{noNotes: 2, success: true, tries: 3}])
+    // showResults([{noNotes: 2, success: true, tries: 3}])
 
     document.getElementById("gameContainer").style.backgroundImage="none"
     this.level = startLevel;
@@ -380,6 +393,11 @@
 
   language = getLanguage()
   // console.log("Switching game language to", language)
+
+  console.log(getCookie("cookiesAllowed"))
+  if (!getCookie("cookiesAllowed")) {
+    cookiePolicyModal.style.display = "block";
+  }
 
   // Language agnostic images
   resources = new ResourcePreLoader();
