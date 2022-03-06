@@ -16,7 +16,7 @@ function GameBoard(options)
             match = true
             for (var i = 1; i < this.sceneBoard[tryIdx].length; i++) {
                 var slot = this.sceneBoard[tryIdx][i]
-                match &= (slot.targetNote == slot.playedNote)
+                match &= slot.notesMatch()
             }
             return match
         }
@@ -224,10 +224,10 @@ function GameBoardBuilder(options)
                 y: 400 * y
             }))
             initFrame = "frameBlueLightFill"
-            sceneRow.push(new Slot(450, 400 * y, targetNotes[0], this.resources, this.audioCache, y*0.05, targetNotes[0], initFrame))
+            sceneRow.push(new Slot(450, 400 * y, targetNotes[0], gameStatus.userNotes[y], 0, this.resources, this.audioCache, y*0.05, targetNotes[0], initFrame))
             for (var x = 1; x < targetNotes.length; x++) {
                 initFrame = "frameBlueLightFill"
-                sceneRow.push(new Slot(450 + (x * 300), 400 * y, targetNotes[x], this.resources, this.audioCache, y*0.05 + x*0.08, "", initFrame))
+                sceneRow.push(new Slot(450 + (x * 300), 400 * y, targetNotes[x], gameStatus.userNotes[y], x, this.resources, this.audioCache, y*0.05 + x*0.08, "", initFrame))
             }
             sceneBoard.push(sceneRow)
         }
@@ -256,7 +256,7 @@ function GameBoardBuilder(options)
 }
 
 
-function Slot(x, y, targetNote, resources, audioCache, initAnimationDelay=0, initNote="", initFrame="frameBlueLightFill")
+function Slot(x, y, targetNote, userNotes, userNoteIdx, resources, audioCache, initAnimationDelay=0, initNote="", initFrame="frameBlueLightFill")
 {
     this.x = x
     this.y = y
@@ -264,7 +264,8 @@ function Slot(x, y, targetNote, resources, audioCache, initAnimationDelay=0, ini
     this.highlightAnimationSteps = [1.0, 0.95, 0.9, 0.95, 1.0, 1.05, 1.1, 1.05, 1.0]
     this.fadeoutAnimationSteps = [1.0, 0.95, 0.85, 0.7, 0.4, 0.0]
     this.targetNote = targetNote
-    this.playedNote = ""
+    this.userNotesRow = userNotes
+    this.userNoteIdx = userNoteIdx
     this.resources = resources
     this.audioCache = audioCache
     this.noteSprite = new ZoomAnimationSprite({
@@ -295,6 +296,10 @@ function Slot(x, y, targetNote, resources, audioCache, initAnimationDelay=0, ini
         zoomSteps: this.highlightAnimationSteps
     })
 
+    this.notesMatch = function(){
+        return this.targetNote == this.userNotesRow[this.userNoteIdx]
+    }
+
     this.playTargetNote = function()
     {
         this.audioCache[this.targetNote].play()
@@ -302,14 +307,14 @@ function Slot(x, y, targetNote, resources, audioCache, initAnimationDelay=0, ini
 
     this.playUserNote = function()
     {
-        if (this.playedNote != "") {
-            this.audioCache[this.playedNote].play()
+        if (this.userNotesRow[this.userNoteIdx] != "") {
+            this.audioCache[this.userNotesRow[this.userNoteIdx]].play()
         }
     }
 
     this.setNote = function(note)
     {
-        this.playedNote = note
+        this.userNotesRow[this.userNoteIdx] = note
         this.noteSprite = new ZoomAnimationSprite({
             image: this.resources.getImage(note),
             x: this.x,
@@ -328,7 +333,7 @@ function Slot(x, y, targetNote, resources, audioCache, initAnimationDelay=0, ini
 
     this.reveal = function() 
     {
-        if (this.targetNote == this.playedNote) {
+        if (this.targetNote == this.userNotesRow[this.userNoteIdx]) {
             this.frameSprite = this.greenFrame
         }
         else {
