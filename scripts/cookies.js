@@ -1,4 +1,9 @@
 function setCookie(name,value,days) {
+    if (name != "cookiesAllowed") {
+        if (!getCookie("cookiesAllowed")) {
+            return
+        }
+    }
     var expires = "";
     if (days) {
         var date = new Date();
