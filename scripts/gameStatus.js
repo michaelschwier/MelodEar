@@ -16,7 +16,15 @@ function GameStatus(options={})
     this.level = options.level || 1
     this.currTry = options.currTry || 0
     this.currSlotIdx = options.currSlotIdx || 1
-    this.userNotes = options.userNotes || Array(5).fill(Array(this.level + 1).fill(""))
+    var initUserNotes = []
+    for (var y = 0; y < 5; y++) {
+        row = []
+        for (var x = 0; x < (this.level + 1); x++) {
+            row.push("")
+        }
+        initUserNotes.push(row)
+    }
+    this.userNotes = options.userNotes || initUserNotes
 
     this.save = function()
     {
