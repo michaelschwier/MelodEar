@@ -394,9 +394,11 @@
   language = getLanguage()
   // console.log("Switching game language to", language)
 
-  console.log(getCookie("cookiesAllowed"))
   if (!getCookie("cookiesAllowed")) {
     cookiePolicyModal.style.display = "block";
+  }
+  else {
+    setCookie("cookiesAllowed", "True", 1000)
   }
 
   // Language agnostic images
