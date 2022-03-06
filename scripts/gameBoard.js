@@ -85,6 +85,7 @@ function GameBoard(options)
                 this.status.currSlotIdx++
             }
         }
+        this.status.save()
     }
 
     this.fadeout = function()
@@ -191,7 +192,7 @@ function GameBoardBuilder(options)
 
     this.build = function(targetNotes, resultsCollector)
     {
-        var gameStatus = new GameStatus()
+        var gameStatus = new GameStatus({level: targetNotes.length - 1})
         return new GameBoard({
             gameStatus: gameStatus,
             resultsCollector: resultsCollector,

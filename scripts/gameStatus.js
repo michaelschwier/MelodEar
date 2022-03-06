@@ -34,7 +34,7 @@ function GameStatus(options={})
         setCookie("gsCurrTry", this.currTry, 1)
         setCookie("gsCurrSlotIdx", this.currSlotIdx, 1)
         for (var y = 0; y < this.userNotes.length; y++) {
-            rowNotes = his.userNotes[y].join(",")
+            rowNotes = this.userNotes[y].join(",")
             setCookie("gsNotesRow" + y, rowNotes, 1)
         }
     }
