@@ -1,4 +1,4 @@
-getUrlParamAsInt = function(parameter, defaultvalue) 
+function getUrlParamAsInt(parameter, defaultvalue) 
 {
   var params = {};
   var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -11,7 +11,7 @@ getUrlParamAsInt = function(parameter, defaultvalue)
   return urlparameter;
 }
 
-getUrlParamAsString = function(parameter, defaultvalue) 
+function getUrlParamAsString(parameter, defaultvalue) 
 {
   var params = {};
   var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -24,7 +24,7 @@ getUrlParamAsString = function(parameter, defaultvalue)
   return urlparameter;
 }
 
-getLanguage = function()
+function getLanguage()
 {
   var language = getUrlParamAsString("lang", "")
   if (language == "") {
@@ -38,4 +38,14 @@ getLanguage = function()
     language = "en";
   }
   return language
+}
+
+function getCurrLocalDateString()
+{
+  var now = new Date()
+  var dd = String(now.getDate()).padStart(2, '0')
+  var mm = String(now.getMonth() + 1).padStart(2, '0')
+  var yyyy = now.getFullYear()
+  var dateString = "" + yyyy + "-" + mm + "-" + dd
+  return dateString
 }
