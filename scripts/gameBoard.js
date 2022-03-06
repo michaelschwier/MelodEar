@@ -1,31 +1,28 @@
-const States = Object.freeze({
-    PlayingTargetNotes: Symbol("PlayingTargetNotes"),
-    PlayingUserNotes:   Symbol("PlayingUserNotes"),
-    RevealingUserNotes: Symbol("RevealingUserNotes"),
-    Idle:               Symbol("Idle"),
-    UserInput:          Symbol("UserInput"),
-    UserInputDone:      Symbol("UserInputDone"),
-    FadeOut:            Symbol("FadeOut"),
-    Finished:           Symbol("Finished")
-})
-
 function GameBoard(options)
 {
-    this.state = States.PlayingTargetNotes
-    this.audioCache = options.audioCache
-    this.targetNotes = options.targetNotes
+    this.status = options.gameStatus
     this.resultsCollector = options.resultsCollector
     this.sceneBoard = options.sceneBoard
     this.sceneWhiteout = options.sceneWhiteout
     this.scene = [this.sceneBoard, this.sceneWhiteout]
-    this.currTry = 0
-    this.currSlotIdx = 1
     this.targetPlayIdx = 0
-    this.userPlayIdx = this.targetNotes.length
+    this.noNotes = this.sceneBoard[0].length - 1
+    this.userPlayIdx = this.noNotes
     this.playCountDown = 1.0
-    this.noteMatches = []
     this.stateChangeListeners = []
 
+    this.notesMatch = function(tryIdx) {
+        if (tryIdx < this.sceneBoard.length) {
+            match = true
+            for (var i = 1; i < this.sceneBoard[tryIdx].length; i++) {
+                var slot = this.sceneBoard[tryIdx][i]
+                match &= (slot.targetNote == slot.playedNote)
+            }
+            return match
+        }
+        return false
+    }
+    
     this.addStateChangeListener = function(listener)
     {
         this.stateChangeListeners.push(listener)
@@ -33,8 +30,8 @@ function GameBoard(options)
 
     this.setState = function(newState)
     {
-        var oldState = this.state
-        this.state = newState
+        var oldState = this.status.state
+        this.status.state = newState
         for (var listener of this.stateChangeListeners) {
             listener.stateChanged(oldState, newState)
         }
@@ -43,7 +40,7 @@ function GameBoard(options)
 
     this.playTargetNotes = function(startDelay = 0.0)
     {
-        if (this.state == States.Idle) {
+        if (this.status.state == States.Idle) {
             this.setState(States.PlayingTargetNotes)
             this.targetPlayIdx = 0
             this.playCountDown = startDelay
@@ -56,8 +53,8 @@ function GameBoard(options)
 
     this.playUserNotes = function(startDelay = 0.0)
     {
-        if (((this.state == States.Idle) || (this.state == States.UserInputDone)) && (this.currTry > 0)) {
-            this.setState(this.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes)
+        if (((this.status.state == States.Idle) || (this.status.state == States.UserInputDone)) && (this.status.currTry > 0)) {
+            this.setState(this.status.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes)
             this.userPlayIdx = 0
             this.playCountDown = startDelay
         }
@@ -69,27 +66,23 @@ function GameBoard(options)
 
     this.handleNotePressed = function(note)
     {   
-        if (this.state == States.Idle) {
-            if (this.sceneBoard[this.currTry][this.currSlotIdx].targetNote == note) {
-                this.audioCache[note].play()
-                this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
-                this.noteMatches.push([true])
-                this.currSlotIdx++
+        if (this.status.state == States.Idle) {
+            if (this.sceneBoard[this.status.currTry][this.status.currSlotIdx].targetNote == note) {
+                this.sceneBoard[this.status.currTry][this.status.currSlotIdx].setNote(note)
+                this.status.currSlotIdx++
                 this.setState(States.UserInput)
             }
         }
-        else if (this.state == States.UserInput) {
-            this.audioCache[note].play()
-            var isCorrectNote = this.sceneBoard[this.currTry][this.currSlotIdx].setNote(note)
-            this.noteMatches[this.currTry].push(isCorrectNote)
-            if (this.currSlotIdx == this.targetNotes.length) {
-                this.currTry++
-                this.currSlotIdx = 1
+        else if (this.status.state == States.UserInput) {
+            this.sceneBoard[this.status.currTry][this.status.currSlotIdx].setNote(note)
+            if (this.status.currSlotIdx == this.noNotes) {
+                this.status.currTry++
+                this.status.currSlotIdx = 1
                 this.setState(States.UserInputDone)
                 this.playUserNotes(1.0)
             }
             else {
-                this.currSlotIdx++
+                this.status.currSlotIdx++
             }
         }
     }
@@ -97,8 +90,8 @@ function GameBoard(options)
     this.fadeout = function()
     {
         for (var y = 0; y < 5; y++) {
-            for (var x = 1; x <= this.targetNotes.length; x++) {
-                this.sceneBoard[y][x].fadeout((4-y)*0.05 + (this.targetNotes.length-x)*0.08)
+            for (var x = 1; x <= this.noNotes; x++) {
+                this.sceneBoard[y][x].fadeout((4-y)*0.05 + (this.noNotes-x)*0.08)
             }
         }
     }
@@ -115,32 +108,30 @@ function GameBoard(options)
         if (this.playCountDown > 0) {
             this.playCountDown -= frameTime
         }
-        if (this.state == States.PlayingTargetNotes) {
-            if ((this.targetPlayIdx < this.targetNotes.length) && (this.playCountDown <= 0)) {
-                var slot = this.sceneBoard[this.currTry][1 + this.targetPlayIdx]
-                var note = this.targetNotes[this.targetPlayIdx]
-                this.audioCache[note].play()
+        if (this.status.state == States.PlayingTargetNotes) {
+            if ((this.targetPlayIdx < this.noNotes) && (this.playCountDown <= 0)) {
+                var slot = this.sceneBoard[this.status.currTry][1 + this.targetPlayIdx]
+                slot.playTargetNote()
                 slot.highlight()
                 this.targetPlayIdx++
                 this.playCountDown = 0.5
             }
-            if (this.targetPlayIdx == this.targetNotes.length) {
+            if (this.targetPlayIdx == this.noNotes) {
                 this.setState(States.Idle)
             }
         }
-        else if ((this.state == States.PlayingUserNotes) || (this.state == States.RevealingUserNotes)) {
-            if ((this.userPlayIdx < this.targetNotes.length) && (this.playCountDown <= 0)) {
-                var slot = this.sceneBoard[this.currTry - 1][1 + this.userPlayIdx]
-                var note = slot.playedNote
-                this.audioCache[note].play()
+        else if ((this.status.state == States.PlayingUserNotes) || (this.status.state == States.RevealingUserNotes)) {
+            if ((this.userPlayIdx < this.noNotes) && (this.playCountDown <= 0)) {
+                var slot = this.sceneBoard[this.status.currTry - 1][1 + this.userPlayIdx]
+                slot.playUserNote()
                 slot.reveal()
                 this.userPlayIdx++
                 this.playCountDown = 0.5
             }
-            if (this.userPlayIdx == this.targetNotes.length) {
-                if (this.state == States.RevealingUserNotes) {
+            if (this.userPlayIdx == this.noNotes) {
+                if (this.status.state == States.RevealingUserNotes) {
                     if (this.playCountDown <= 0) {
-                        if (this.noteMatches[this.currTry-1].every(Boolean) || (this.currTry >= 5)) {
+                        if (this.notesMatch(this.status.currTry-1) || (this.status.currTry >= 5)) {
                             this.setState(States.FadeOut)
                             this.playCountDown = 0.8
                             this.fadeout()
@@ -156,27 +147,27 @@ function GameBoard(options)
                 }
             }
         }
-        else if (this.state == States.FadeOut) {
+        else if (this.status.state == States.FadeOut) {
             if (this.playCountDown <= 0) {
-                if (this.noteMatches[this.currTry-1].every(Boolean)) {
+                if (this.notesMatch(this.status.currTry-1)) {
                     this.setState(States.Finished)
                     this.resultsCollector.levelFinished({
-                        noNotes: this.targetNotes.length,
+                        noNotes: this.noNotes,
                         success: true,
-                        tries: this.currTry
+                        tries: this.status.currTry
                     })
                 }
-                else if (this.currTry >= 5) {
+                else if (this.status.currTry >= 5) {
                     this.setState(States.Finished)
                     this.resultsCollector.levelFinished({
-                        noNotes: this.targetNotes.length,
+                        noNotes: this.noNotes,
                         success: false,
-                        tries: this.currTry
+                        tries: this.status.currTry
                     })
                 }
             }
         }
-        // console.log(this.state)
+        // console.log(this.status.state)
     }
 
     this.render = function(renderContext)
@@ -200,16 +191,29 @@ function GameBoardBuilder(options)
 
     this.build = function(targetNotes, resultsCollector)
     {
+        var gameStatus = new GameStatus()
         return new GameBoard({
-            audioCache: this.audioCache,
-            targetNotes: targetNotes,
+            gameStatus: gameStatus,
             resultsCollector: resultsCollector,
-            sceneBoard: this.buildBoardScene(targetNotes),
-            sceneWhiteout: this.buildWhiteoutScene(targetNotes)
+            sceneBoard: this.buildBoardScene(targetNotes, gameStatus),
+            sceneWhiteout: this.buildWhiteoutScene(targetNotes, gameStatus),
         })
     }
 
-    this.buildBoardScene = function(targetNotes)
+    this.getInitFrame = function(savedNote, savedNoteRevealed, targetNote)
+    {
+        if (savedNote == "") {
+            return "frameBlueLightFill"
+        }
+        else if (savedNoteRevealed) {
+            return savedNote == targetNote ? "frameGreenFill" : "frameRedFill"
+        }
+        else {
+            return "frameBlueNoFill"
+        }
+    }
+
+    this.buildBoardScene = function(targetNotes, gameStatus)
     {
         var sceneBoard = []
         for (var y = 0; y < 5; y++) {
@@ -219,16 +223,18 @@ function GameBoardBuilder(options)
                 x: 150,
                 y: 400 * y
             }))
-            sceneRow.push(new Slot(450, 400 * y, targetNotes[0], this.resources, y*0.05, targetNotes[0]))
+            initFrame = "frameBlueLightFill"
+            sceneRow.push(new Slot(450, 400 * y, targetNotes[0], this.resources, this.audioCache, y*0.05, targetNotes[0], initFrame))
             for (var x = 1; x < targetNotes.length; x++) {
-                sceneRow.push(new Slot(450 + (x * 300), 400 * y, targetNotes[x], this.resources, y*0.05 + x*0.08))
+                initFrame = "frameBlueLightFill"
+                sceneRow.push(new Slot(450 + (x * 300), 400 * y, targetNotes[x], this.resources, this.audioCache, y*0.05 + x*0.08, "", initFrame))
             }
             sceneBoard.push(sceneRow)
         }
         return sceneBoard
     }
 
-    this.buildWhiteoutScene = function(targetNotes)
+    this.buildWhiteoutScene = function(targetNotes, gameStatus)
     {
         var sceneWhiteout = []
         for (var y = 1; y < 5; y++) {
@@ -242,12 +248,15 @@ function GameBoardBuilder(options)
             }
             sceneWhiteout.push(sceneRow)
         }
+        // for (var y = 1; y < currTry; y++) {
+        //     sceneWhiteout.shift()
+        // }
         return sceneWhiteout
     }
 }
 
 
-function Slot(x, y, targetNote, resources, initAnimationDelay=0, initNote="lines")
+function Slot(x, y, targetNote, resources, audioCache, initAnimationDelay=0, initNote="", initFrame="frameBlueLightFill")
 {
     this.x = x
     this.y = y
@@ -257,15 +266,16 @@ function Slot(x, y, targetNote, resources, initAnimationDelay=0, initNote="lines
     this.targetNote = targetNote
     this.playedNote = ""
     this.resources = resources
+    this.audioCache = audioCache
     this.noteSprite = new ZoomAnimationSprite({
-        image: this.resources.getImage(initNote),
+        image: this.resources.getImage(initNote == "" ? "lines" : initNote),
         x: this.x,
         y: this.y,
         zoomSteps: this.initAnimationSteps
     })
     this.noteSprite.play(initAnimationDelay)
     this.frameSprite = new ZoomAnimationSprite({
-        image: this.resources.getImage("frameBlueLightFill"),
+        image: this.resources.getImage(initFrame),
         x: this.x,
         y: this.y,
         zoomSteps: this.initAnimationSteps
@@ -285,6 +295,18 @@ function Slot(x, y, targetNote, resources, initAnimationDelay=0, initNote="lines
         zoomSteps: this.highlightAnimationSteps
     })
 
+    this.playTargetNote = function()
+    {
+        this.audioCache[this.targetNote].play()
+    }
+
+    this.playUserNote = function()
+    {
+        if (this.playedNote != "") {
+            this.audioCache[this.playedNote].play()
+        }
+    }
+
     this.setNote = function(note)
     {
         this.playedNote = note
@@ -301,7 +323,7 @@ function Slot(x, y, targetNote, resources, initAnimationDelay=0, initNote="lines
             zoomSteps: this.highlightAnimationSteps
         })
         this.highlight()
-        return this.targetNote == this.playedNote
+        this.playUserNote()
     }
 
     this.reveal = function() 
