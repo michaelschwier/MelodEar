@@ -1,6 +1,18 @@
+const States = Object.freeze({
+    PlayingTargetNotes: "PlayingTargetNotes",
+    PlayingUserNotes:   "PlayingUserNotes",
+    RevealingUserNotes: "RevealingUserNotes",
+    Idle:               "Idle",
+    UserInput:          "UserInput",
+    UserInputDone:      "UserInputDone",
+    FadeOut:            "FadeOut",
+    Finished:           "Finished"
+})
+
 function GameBoard(options)
 {
     this.status = options.gameStatus
+    this.state = options.state || States.PlayingTargetNotes
     this.resultsCollector = options.resultsCollector
     this.sceneBoard = options.sceneBoard
     this.sceneWhiteout = options.sceneWhiteout
@@ -30,8 +42,8 @@ function GameBoard(options)
 
     this.setState = function(newState)
     {
-        var oldState = this.status.state
-        this.status.state = newState
+        var oldState = this.state
+        this.state = newState
         for (var listener of this.stateChangeListeners) {
             listener.stateChanged(oldState, newState)
         }
@@ -40,7 +52,7 @@ function GameBoard(options)
 
     this.playTargetNotes = function(startDelay = 0.0)
     {
-        if (this.status.state == States.Idle) {
+        if (this.state == States.Idle) {
             this.setState(States.PlayingTargetNotes)
             this.targetPlayIdx = 0
             this.playCountDown = startDelay
@@ -53,8 +65,8 @@ function GameBoard(options)
 
     this.playUserNotes = function(startDelay = 0.0)
     {
-        if (((this.status.state == States.Idle) || (this.status.state == States.UserInputDone)) && (this.status.currTry > 0)) {
-            this.setState(this.status.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes)
+        if (((this.state == States.Idle) || (this.state == States.UserInputDone)) && (this.status.currTry > 0)) {
+            this.setState(this.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes)
             this.userPlayIdx = 0
             this.playCountDown = startDelay
         }
@@ -66,14 +78,14 @@ function GameBoard(options)
 
     this.handleNotePressed = function(note)
     {   
-        if (this.status.state == States.Idle) {
+        if (this.state == States.Idle) {
             if (this.sceneBoard[this.status.currTry][this.status.currSlotIdx].targetNote == note) {
                 this.sceneBoard[this.status.currTry][this.status.currSlotIdx].setNote(note)
                 this.status.currSlotIdx++
                 this.setState(States.UserInput)
             }
         }
-        else if (this.status.state == States.UserInput) {
+        else if (this.state == States.UserInput) {
             this.sceneBoard[this.status.currTry][this.status.currSlotIdx].setNote(note)
             if (this.status.currSlotIdx == this.noNotes) {
                 this.status.currTry++
@@ -109,7 +121,7 @@ function GameBoard(options)
         if (this.playCountDown > 0) {
             this.playCountDown -= frameTime
         }
-        if (this.status.state == States.PlayingTargetNotes) {
+        if (this.state == States.PlayingTargetNotes) {
             if ((this.targetPlayIdx < this.noNotes) && (this.playCountDown <= 0)) {
                 var slot = this.sceneBoard[this.status.currTry][1 + this.targetPlayIdx]
                 slot.playTargetNote()
@@ -121,7 +133,7 @@ function GameBoard(options)
                 this.setState(States.Idle)
             }
         }
-        else if ((this.status.state == States.PlayingUserNotes) || (this.status.state == States.RevealingUserNotes)) {
+        else if ((this.state == States.PlayingUserNotes) || (this.state == States.RevealingUserNotes)) {
             if ((this.userPlayIdx < this.noNotes) && (this.playCountDown <= 0)) {
                 var slot = this.sceneBoard[this.status.currTry - 1][1 + this.userPlayIdx]
                 slot.playUserNote()
@@ -130,7 +142,7 @@ function GameBoard(options)
                 this.playCountDown = 0.5
             }
             if (this.userPlayIdx == this.noNotes) {
-                if (this.status.state == States.RevealingUserNotes) {
+                if (this.state == States.RevealingUserNotes) {
                     if (this.playCountDown <= 0) {
                         if (this.notesMatch(this.status.currTry-1) || (this.status.currTry >= 5)) {
                             this.setState(States.FadeOut)
@@ -148,10 +160,11 @@ function GameBoard(options)
                 }
             }
         }
-        else if (this.status.state == States.FadeOut) {
+        else if (this.state == States.FadeOut) {
             if (this.playCountDown <= 0) {
                 if (this.notesMatch(this.status.currTry-1)) {
                     this.setState(States.Finished)
+                    this.status.levelTries[this.status.level-1] = this.status.currTry
                     this.resultsCollector.levelFinished({
                         noNotes: this.noNotes,
                         success: true,
@@ -160,6 +173,7 @@ function GameBoard(options)
                 }
                 else if (this.status.currTry >= 5) {
                     this.setState(States.Finished)
+                    this.status.levelTries[this.status.level-1] = this.status.currTry
                     this.resultsCollector.levelFinished({
                         noNotes: this.noNotes,
                         success: false,
@@ -168,7 +182,7 @@ function GameBoard(options)
                 }
             }
         }
-        // console.log(this.status.state)
+        // console.log(this.state)
     }
 
     this.render = function(renderContext)
@@ -190,27 +204,27 @@ function GameBoardBuilder(options)
     this.resources = options.resources
     this.audioCache = options.audioCache
 
-    this.build = function(targetNotes, resultsCollector)
+    this.build = function(targetNotes, gameStatus, resultsCollector)
     {
-        var gameStatus = new GameStatus({level: targetNotes.length - 1})
         return new GameBoard({
             gameStatus: gameStatus,
+            state: this.determineStateFromGameStatus(gameStatus),
             resultsCollector: resultsCollector,
             sceneBoard: this.buildBoardScene(targetNotes, gameStatus),
             sceneWhiteout: this.buildWhiteoutScene(targetNotes, gameStatus),
         })
     }
 
-    this.getInitFrame = function(savedNote, savedNoteRevealed, targetNote)
+    this.determineStateFromGameStatus = function(gameStatus)
     {
-        if (savedNote == "") {
-            return "frameBlueLightFill"
+        if (gameStatus.currTry > 5) {
+            return States.Finished
         }
-        else if (savedNoteRevealed) {
-            return savedNote == targetNote ? "frameGreenFill" : "frameRedFill"
+        else if ((gameStatus.currTry == 0) && (gameStatus.currSlotIdx == 1)) {
+            return States.PlayingTargetNotes
         }
         else {
-            return "frameBlueNoFill"
+            return States.UserInput
         }
     }
 
@@ -224,15 +238,36 @@ function GameBoardBuilder(options)
                 x: 150,
                 y: 400 * y
             }))
-            initFrame = "frameBlueLightFill"
+            var initFrame = this.determineInitFrameFromGameStatus(gameStatus, targetNotes, y, 0)
             sceneRow.push(new Slot(450, 400 * y, targetNotes[0], gameStatus.userNotes[y], 0, this.resources, this.audioCache, y*0.05, targetNotes[0], initFrame))
             for (var x = 1; x < targetNotes.length; x++) {
-                initFrame = "frameBlueLightFill"
-                sceneRow.push(new Slot(450 + (x * 300), 400 * y, targetNotes[x], gameStatus.userNotes[y], x, this.resources, this.audioCache, y*0.05 + x*0.08, "", initFrame))
+                var initNote = gameStatus.userNotes[y][x]
+                var initFrame = this.determineInitFrameFromGameStatus(gameStatus, targetNotes, y, x)
+                sceneRow.push(new Slot(450 + (x * 300), 400 * y, targetNotes[x], gameStatus.userNotes[y], x, this.resources, this.audioCache, y*0.05 + x*0.08, initNote, initFrame))
             }
             sceneBoard.push(sceneRow)
         }
         return sceneBoard
+    }
+
+    this.determineInitFrameFromGameStatus = function(gameStatus, targetNotes, y, x)
+    {
+        var note = gameStatus.userNotes[y][x]
+        var frame = "frameBlueLightFill"
+        if (note != "") {
+            if (y == gameStatus.currTry) {
+                frame = "frameBlueNoFill"
+            }
+            else if (y < gameStatus.currTry) {
+                if (note == targetNotes[x]) {
+                    frame = "frameGreenFill"
+                }
+                else {
+                    frame = "frameRedFill"
+                }
+            }
+        }
+        return frame
     }
 
     this.buildWhiteoutScene = function(targetNotes, gameStatus)
@@ -249,9 +284,9 @@ function GameBoardBuilder(options)
             }
             sceneWhiteout.push(sceneRow)
         }
-        // for (var y = 1; y < currTry; y++) {
-        //     sceneWhiteout.shift()
-        // }
+        for (var y = 1; y <= gameStatus.currTry; y++) {
+            sceneWhiteout.shift()
+        }
         return sceneWhiteout
     }
 }

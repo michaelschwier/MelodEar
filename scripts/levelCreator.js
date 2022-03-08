@@ -12,11 +12,11 @@ function LevelCreator(resources, audioCache)
     audioCache: this.audioCache,
   })
 
-  this.getScene = function(levelIdx, resultsCollector)
+  this.getScene = function(gameStatus, resultsCollector)
   {
     var scene = {}
     var notes = ["c4", "e4", "g4", "e4", "b4", "e4", "c4"]
-    scene.gameBoard = this.gameBoardBuilder.build(notes.slice(0, levelIdx + 1), resultsCollector)
+    scene.gameBoard = this.gameBoardBuilder.build(notes.slice(0, gameStatus.level + 1), gameStatus, resultsCollector)
     scene.keyBoard = this.keyBoardBuilder.build(scene.gameBoard)
     // HACK, think about smth nicer here
     scene.gameBoard.addStateChangeListener(scene.keyBoard)

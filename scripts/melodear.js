@@ -263,17 +263,19 @@
     // showResults([{noNotes: 2, success: true, tries: 3}])
 
     document.getElementById("gameContainer").style.backgroundImage="none"
-    this.level = startLevel;
+    this.gameStatus = new GameStatus({level: startLevel})
+    this.gameStatus.load()
+    this.gameStatus.save()
     this.results = []
     this.finishedDelay = 1.0;
-    GamePhase.call(this, levelCreator.getScene(this.level, this));
+    GamePhase.call(this, levelCreator.getScene(this.gameStatus, this));
 
 
     this.levelFinished = function(levelResult) {
       this.results.push(levelResult)
-      if (levelResult.success && (this.level < 5)) {
-          this.level++
-          this.scene = levelCreator.getScene(this.level, this)
+      if (levelResult.success && (this.gameStatus.level < 5)) {
+        this.gameStatus.nextLevel()
+        this.scene = levelCreator.getScene(this.gameStatus, this)
       }
       else {
         showResults(this.results)
