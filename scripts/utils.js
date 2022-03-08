@@ -49,3 +49,13 @@ function getCurrLocalDateString()
   var dateString = "" + yyyy + "-" + mm + "-" + dd
   return dateString
 }
+
+function getTodaysGameIndex()
+{
+  const oneDay = 24 * 60 * 60 * 1000;
+  const referenceDate = new Date(2022, 2, 30); // March 30th (months are 0 indexed in JS)
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()) // removes hours etc from now
+  const diffDays = Math.round((today - referenceDate) / oneDay);
+  return diffDays
+}
