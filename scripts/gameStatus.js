@@ -19,6 +19,7 @@ function GameStatus(options={})
     this.gameIdx = options.gameIdx || getTodaysGameIndex()
     this.level = options.level || 1
     this.levelTries = Array(5).fill(-1)
+    this.successes = Array(5).fill(0)
     this.initLevel(options)
 
     this.nextLevel = function() {
@@ -34,6 +35,7 @@ function GameStatus(options={})
         setCookie("gsCurrTry", this.currTry, 1)
         setCookie("gsCurrSlotIdx", this.currSlotIdx, 1)
         setCookie("gsLevelTries", this.levelTries.join(","), 1)
+        setCookie("gsSuccesses", this.successes.join(","), 1)
         for (var y = 0; y < this.userNotes.length; y++) {
             rowNotes = this.userNotes[y].join(",")
             setCookie("gsNotesRow" + y, rowNotes, 1)
@@ -55,6 +57,10 @@ function GameStatus(options={})
             for (var i = 0; i < levelTries.length; i++) {
                 levelTries[i] = parseInt(levelTries[i])
             }
+            var successes = getCookie("gsSuccesses").split(",")
+            for (var i = 0; i < successes.length; i++) {
+                successes[i] = parseInt(successes[i])
+            }
             var userNotes = []
             for (var y = 0; y < this.userNotes.length; y++) {
                 var row = getCookie("gsNotesRow" + y).split(",")
@@ -66,6 +72,7 @@ function GameStatus(options={})
             this.currTry = currTry
             this.currSlotIdx = currSlotIdx
             this.levelTries = levelTries
+            this.successes = successes
             this.userNotes = userNotes
         }
         catch (e) {

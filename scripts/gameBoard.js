@@ -13,7 +13,7 @@ function GameBoard(options)
 {
     this.status = options.gameStatus
     this.state = options.state || States.PlayingTargetNotes
-    this.resultsCollector = options.resultsCollector
+    this.callback = options.callback
     this.sceneBoard = options.sceneBoard
     this.sceneWhiteout = options.sceneWhiteout
     this.scene = [this.sceneBoard, this.sceneWhiteout]
@@ -165,20 +165,14 @@ function GameBoard(options)
                 if (this.notesMatch(this.status.currTry-1)) {
                     this.setState(States.Finished)
                     this.status.levelTries[this.status.level-1] = this.status.currTry
-                    this.resultsCollector.levelFinished({
-                        noNotes: this.noNotes,
-                        success: true,
-                        tries: this.status.currTry
-                    })
+                    this.status.successes[this.status.level-1] = 1
+                    this.callback.levelFinished(true)
                 }
                 else if (this.status.currTry >= 5) {
                     this.setState(States.Finished)
                     this.status.levelTries[this.status.level-1] = this.status.currTry
-                    this.resultsCollector.levelFinished({
-                        noNotes: this.noNotes,
-                        success: false,
-                        tries: this.status.currTry
-                    })
+                    this.status.successes[this.status.level-1] = 0
+                    this.callback.levelFinished(false)
                 }
             }
         }
@@ -204,12 +198,12 @@ function GameBoardBuilder(options)
     this.resources = options.resources
     this.audioCache = options.audioCache
 
-    this.build = function(targetNotes, gameStatus, resultsCollector)
+    this.build = function(targetNotes, gameStatus, callback)
     {
         return new GameBoard({
             gameStatus: gameStatus,
             state: this.determineStateFromGameStatus(gameStatus),
-            resultsCollector: resultsCollector,
+            callback: callback,
             sceneBoard: this.buildBoardScene(targetNotes, gameStatus),
             sceneWhiteout: this.buildWhiteoutScene(targetNotes, gameStatus),
         })

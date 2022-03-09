@@ -260,25 +260,22 @@
   // --------------------------------------------------------------------------
   function MainGamePhase(startLevel)
   {
-    // showResults([{noNotes: 2, success: true, tries: 3}])
-
     document.getElementById("gameContainer").style.backgroundImage="none"
     this.gameStatus = new GameStatus({level: startLevel})
     this.gameStatus.load()
     this.gameStatus.save()
-    this.results = []
     this.finishedDelay = 1.0;
     GamePhase.call(this, levelCreator.getScene(this.gameStatus, this));
 
 
-    this.levelFinished = function(levelResult) {
-      this.results.push(levelResult)
-      if (levelResult.success && (this.gameStatus.level < 5)) {
+    this.levelFinished = function(success) {
+      if (success && (this.gameStatus.level < 5)) {
         this.gameStatus.nextLevel()
+        this.gameStatus.save()
         this.scene = levelCreator.getScene(this.gameStatus, this)
       }
       else {
-        showResults(this.results)
+        showResults(this.gameStatus, success)
       }
     }
     
@@ -297,10 +294,9 @@
   
 
   // --------------------------------------------------------------------------
-  function showResults(results)
+  function showResults(gameStatus, success)
   {
-    noSucesses = results.length - 1
-    noSucesses += results[noSucesses].success ? 1 : 0
+    noSucesses = success ? gameStatus.level : gameStatus.level - 1
     if (noSucesses > 0) {
       document.getElementById("resultsTitle").textContent = "Congratulations, you finished Level " + noSucesses
     }
@@ -309,8 +305,8 @@
     }
     content = "<table><tr><th>Level</th><th>Finished</th><th>Tries</th></tr>"
     for (var i = 0; i < 5; i++) {
-      if (i < results.length) {
-        content += "<tr><td>" + (i + 1) + "</td><td>" + (results[i].success ? "Yes" : "No") + "</td><td>" + results[i].tries + "</td></tr>"
+      if (gameStatus.levelTries[i] > 0) {
+        content += "<tr><td>" + (i + 1) + "</td><td>" + (gameStatus.successes[i] ? "Yes" : "No") + "</td><td>" + gameStatus.levelTries[i] + "</td></tr>"
       }
       else {
         content += "<tr><td>" + (i + 1) + "</td><td>No</td><td>N/A</td></tr>"
@@ -323,14 +319,14 @@
     uRepLeft = "\u{1D106}"
     uRepRight = " \u{1D107}"
     uTimes = " \u{D7}"
-    resultsShareText = "MelodEar ??? " + noSucesses + "/5\n\n"
-    for (var r of results) {
-      if (r.success) {
+    resultsShareText = "MelodEar " + gameStatus.gameIdx + " " + noSucesses + "/5\n\n"
+    for (var levelIdx = 0; levelIdx < 5; levelIdx++) {
+      if (gameStatus.successes[levelIdx]) {
         resultsShareText += uRepLeft
-        for (var n = 0; n < r.noNotes; n++) {
+        for (var n = 0; n < levelIdx + 2; n++) {
           resultsShareText += uNote
         }
-        resultsShareText += uRepRight + uTimes + r.tries + "\n"
+        resultsShareText += uRepRight + uTimes + gameStatus.levelTries[levelIdx] + "\n"
       }
     }
     resultsModal.style.display = "block";
