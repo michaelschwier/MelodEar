@@ -2,8 +2,6 @@ function GameStatus(options={})
 {
     this.initLevel = function(options) 
     {
-        this.currTry = options.currTry || 0
-        this.currSlotIdx = options.currSlotIdx || 1
         var initUserNotes = []
         for (var y = 0; y < 5; y++) {
             row = []
@@ -12,7 +10,9 @@ function GameStatus(options={})
             }
             initUserNotes.push(row)
         }
-        this.userNotes = options.userNotes || initUserNotes    
+        this.userNotes = options.userNotes || initUserNotes
+        this.levelTries[this.level - 1] = -1
+        this.successes[this.level - 1] = 0
     }
 
     this.date = options.date || getCurrLocalDateString()
@@ -27,13 +27,56 @@ function GameStatus(options={})
         this.initLevel({})
     }
 
+    this.levelFinished = function(success) {
+        this.successes[this.level - 1] = success ? 1 : 0
+        if (this.currTry() > 0) {
+            this.levelTries[this.level - 1] = this.currTry()
+        }
+    }
+
+    this.noNotes = function()
+    {
+        return this.userNotes[0].length
+    }
+
+    this.noTries = function()
+    {
+        return this.userNotes.length
+    }
+
+    this.currTry = function()
+    {
+        var currTry = 0
+        for (var row of this.userNotes) {
+            if (row[this.noNotes() - 1] == "") {
+                break
+            }
+            currTry++
+        }
+        return currTry
+    }
+
+    this.currSlotIdx = function()
+    {
+        if (this.currTry() >= this.noTries()) {
+            return 0
+        }
+        var currSlotIdx = 0
+        // Due to implementation of this.currTry() at least the last note must still be ""
+        for (var note of this.userNotes[this.currTry()]) {
+            if (note == "") {
+                break
+            }
+            currSlotIdx++
+        }
+        return currSlotIdx
+    }
+
     this.save = function()
     {
         setCookie("gsDate", this.date, 1)
         setCookie("gsGameIdx", this.gameIdx, 1)
         setCookie("gsLevel", this.level, 1)
-        setCookie("gsCurrTry", this.currTry, 1)
-        setCookie("gsCurrSlotIdx", this.currSlotIdx, 1)
         setCookie("gsLevelTries", this.levelTries.join(","), 1)
         setCookie("gsSuccesses", this.successes.join(","), 1)
         for (var y = 0; y < this.userNotes.length; y++) {
@@ -51,8 +94,6 @@ function GameStatus(options={})
                 return
             }
             var level = parseInt(getCookie("gsLevel"))
-            var currTry = parseInt(getCookie("gsCurrTry"))
-            var currSlotIdx = parseInt(getCookie("gsCurrSlotIdx"))
             var levelTries = getCookie("gsLevelTries").split(",")
             for (var i = 0; i < levelTries.length; i++) {
                 levelTries[i] = parseInt(levelTries[i])
@@ -69,11 +110,13 @@ function GameStatus(options={})
             this.date = date
             this.gameIdx = gameIdx
             this.level = level
-            this.currTry = currTry
-            this.currSlotIdx = currSlotIdx
             this.levelTries = levelTries
             this.successes = successes
             this.userNotes = userNotes
+            if ((this.noNotes() - 1) != this.level) {
+                console.log("Inconsistent game state for level " + this.level + " and no. notes " + this.level + ". Going back to last valid level")
+                this.level = this.noNotes() - 1
+            }
         }
         catch (e) {
             console.log("ERROR in GameStatus.load: ", e)

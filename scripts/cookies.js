@@ -1,4 +1,4 @@
-function setCookie(name,value,days) {
+function setCookie(name, value, days) {
     if (name != "cookiesAllowed") {
         if (!getCookie("cookiesAllowed")) {
             return

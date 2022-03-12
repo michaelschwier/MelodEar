@@ -16,11 +16,10 @@ function GameBoard(options)
     this.callback = options.callback
     this.sceneBoard = options.sceneBoard
     this.sceneWhiteout = options.sceneWhiteout
-    this.scene = [this.sceneBoard, this.sceneWhiteout]
+    this.scene = [options.sceneBackground, this.sceneBoard, this.sceneWhiteout]
     this.targetPlayIdx = 0
-    this.noNotes = this.sceneBoard[0].length - 1
-    this.userPlayIdx = this.noNotes
-    this.playCountDown = 1.0
+    this.userPlayIdx = this.status.noNotes()
+    this.playCountDown = this.state == States.PlayingTargetNotes ? 1.0 : 0.0
     this.stateChangeListeners = []
 
     this.notesMatch = function(tryIdx) {
@@ -65,7 +64,7 @@ function GameBoard(options)
 
     this.playUserNotes = function(startDelay = 0.0)
     {
-        if (((this.state == States.Idle) || (this.state == States.UserInputDone)) && (this.status.currTry > 0)) {
+        if (((this.state == States.Idle) || (this.state == States.UserInputDone)) && (this.status.currTry() > 0)) {
             this.setState(this.state == States.Idle ? States.PlayingUserNotes : States.RevealingUserNotes)
             this.userPlayIdx = 0
             this.playCountDown = startDelay
@@ -79,22 +78,16 @@ function GameBoard(options)
     this.handleNotePressed = function(note)
     {   
         if (this.state == States.Idle) {
-            if (this.sceneBoard[this.status.currTry][this.status.currSlotIdx].targetNote == note) {
-                this.sceneBoard[this.status.currTry][this.status.currSlotIdx].setNote(note)
-                this.status.currSlotIdx++
+            if (this.sceneBoard[this.status.currTry()][this.status.currSlotIdx()].targetNote == note) {
+                this.sceneBoard[this.status.currTry()][this.status.currSlotIdx()].setNote(note)
                 this.setState(States.UserInput)
             }
         }
         else if (this.state == States.UserInput) {
-            this.sceneBoard[this.status.currTry][this.status.currSlotIdx].setNote(note)
-            if (this.status.currSlotIdx == this.noNotes) {
-                this.status.currTry++
-                this.status.currSlotIdx = 1
+            this.sceneBoard[this.status.currTry()][this.status.currSlotIdx()].setNote(note)
+            if (this.status.currSlotIdx() == 0) {
                 this.setState(States.UserInputDone)
                 this.playUserNotes(1.0)
-            }
-            else {
-                this.status.currSlotIdx++
             }
         }
         this.status.save()
@@ -103,8 +96,8 @@ function GameBoard(options)
     this.fadeout = function()
     {
         for (var y = 0; y < 5; y++) {
-            for (var x = 1; x <= this.noNotes; x++) {
-                this.sceneBoard[y][x].fadeout((4-y)*0.05 + (this.noNotes-x)*0.08)
+            for (var x = 0; x < this.status.noNotes(); x++) {
+                this.sceneBoard[y][x].fadeout((4-y)*0.05 + (this.status.noNotes()-x)*0.08)
             }
         }
     }
@@ -122,29 +115,29 @@ function GameBoard(options)
             this.playCountDown -= frameTime
         }
         if (this.state == States.PlayingTargetNotes) {
-            if ((this.targetPlayIdx < this.noNotes) && (this.playCountDown <= 0)) {
-                var slot = this.sceneBoard[this.status.currTry][1 + this.targetPlayIdx]
+            if ((this.targetPlayIdx < this.status.noNotes()) && (this.playCountDown <= 0)) {
+                var slot = this.sceneBoard[this.status.currTry()][this.targetPlayIdx]
                 slot.playTargetNote()
                 slot.highlight()
                 this.targetPlayIdx++
                 this.playCountDown = 0.5
             }
-            if (this.targetPlayIdx == this.noNotes) {
+            if (this.targetPlayIdx == this.status.noNotes()) {
                 this.setState(States.Idle)
             }
         }
         else if ((this.state == States.PlayingUserNotes) || (this.state == States.RevealingUserNotes)) {
-            if ((this.userPlayIdx < this.noNotes) && (this.playCountDown <= 0)) {
-                var slot = this.sceneBoard[this.status.currTry - 1][1 + this.userPlayIdx]
+            if ((this.userPlayIdx < this.status.noNotes()) && (this.playCountDown <= 0)) {
+                var slot = this.sceneBoard[this.status.currTry() - 1][this.userPlayIdx]
                 slot.playUserNote()
                 slot.reveal()
                 this.userPlayIdx++
                 this.playCountDown = 0.5
             }
-            if (this.userPlayIdx == this.noNotes) {
+            if (this.userPlayIdx == this.status.noNotes()) {
                 if (this.state == States.RevealingUserNotes) {
                     if (this.playCountDown <= 0) {
-                        if (this.notesMatch(this.status.currTry-1) || (this.status.currTry >= 5)) {
+                        if (this.notesMatch(this.status.currTry()-1) || (this.status.currTry() >= 5)) {
                             this.setState(States.FadeOut)
                             this.playCountDown = 0.8
                             this.fadeout()
@@ -162,16 +155,14 @@ function GameBoard(options)
         }
         else if (this.state == States.FadeOut) {
             if (this.playCountDown <= 0) {
-                if (this.notesMatch(this.status.currTry-1)) {
+                if (this.notesMatch(this.status.currTry()-1)) {
                     this.setState(States.Finished)
-                    this.status.levelTries[this.status.level-1] = this.status.currTry
-                    this.status.successes[this.status.level-1] = 1
+                    this.status.levelFinished(true)
                     this.callback.levelFinished(true)
                 }
-                else if (this.status.currTry >= 5) {
+                else if (this.status.currTry() >= 5) {
                     this.setState(States.Finished)
-                    this.status.levelTries[this.status.level-1] = this.status.currTry
-                    this.status.successes[this.status.level-1] = 0
+                    this.status.levelFinished(false)
                     this.callback.levelFinished(false)
                 }
             }
@@ -200,10 +191,13 @@ function GameBoardBuilder(options)
 
     this.build = function(targetNotes, gameStatus, callback)
     {
+        var state = this.determineStateFromGameStatus(gameStatus)
+        console.log(state)
         return new GameBoard({
             gameStatus: gameStatus,
-            state: this.determineStateFromGameStatus(gameStatus),
+            state: state,
             callback: callback,
+            sceneBackground: this.buildBackgroundScene(),
             sceneBoard: this.buildBoardScene(targetNotes, gameStatus),
             sceneWhiteout: this.buildWhiteoutScene(targetNotes, gameStatus),
         })
@@ -211,20 +205,26 @@ function GameBoardBuilder(options)
 
     this.determineStateFromGameStatus = function(gameStatus)
     {
-        if (gameStatus.currTry > 5) {
-            return States.Finished
+        if (gameStatus.currTry() >= 5) {
+            return States.RevealingUserNotes
         }
-        else if ((gameStatus.currTry == 0) && (gameStatus.currSlotIdx == 1)) {
+        else if ((gameStatus.currTry() == 0) && (gameStatus.currSlotIdx() == 0)) {
             return States.PlayingTargetNotes
         }
-        else {
+        else if ((gameStatus.currTry() > 0) && (gameStatus.currSlotIdx() == 0)) {
+            return States.RevealingUserNotes
+        }
+        else if (gameStatus.currSlotIdx() > 0) {
             return States.UserInput
+        }
+        else {
+            return States.Idle
         }
     }
 
-    this.buildBoardScene = function(targetNotes, gameStatus)
+    this.buildBackgroundScene = function()
     {
-        var sceneBoard = []
+        var sceneBackground = []
         for (var y = 0; y < 5; y++) {
             var sceneRow = []
             sceneRow.push(new Sprite({
@@ -232,6 +232,23 @@ function GameBoardBuilder(options)
                 x: 150,
                 y: 400 * y
             }))
+            for (var x = 0; x < 6; x++) {
+                sceneRow.push(new Sprite({
+                    image: this.resources.getImage("lines"),
+                    x: 450 + (x * 300),
+                    y: 400 * y
+                }))
+            }
+            sceneBackground.push(sceneRow)
+        }
+        return sceneBackground
+    }
+
+    this.buildBoardScene = function(targetNotes, gameStatus)
+    {
+        var sceneBoard = []
+        for (var y = 0; y < 5; y++) {
+            var sceneRow = []
             var initFrame = this.determineInitFrameFromGameStatus(gameStatus, targetNotes, y, 0)
             sceneRow.push(new Slot(450, 400 * y, targetNotes[0], gameStatus.userNotes[y], 0, this.resources, this.audioCache, y*0.05, targetNotes[0], initFrame))
             for (var x = 1; x < targetNotes.length; x++) {
@@ -249,10 +266,10 @@ function GameBoardBuilder(options)
         var note = gameStatus.userNotes[y][x]
         var frame = "frameBlueLightFill"
         if (note != "") {
-            if (y == gameStatus.currTry) {
+            if (y == gameStatus.currTry()) {
                 frame = "frameBlueNoFill"
             }
-            else if (y < gameStatus.currTry) {
+            else if (y < gameStatus.currTry()) {
                 if (note == targetNotes[x]) {
                     frame = "frameGreenFill"
                 }
@@ -269,7 +286,7 @@ function GameBoardBuilder(options)
         var sceneWhiteout = []
         for (var y = 1; y < 5; y++) {
             var sceneRow = []
-            for (var x = 0; x <= targetNotes.length; x++) {
+            for (var x = 0; x < 7; x++) {
                 sceneRow.push(new Sprite({
                     image: this.resources.getImage("whiteout"),
                     x: 150 + (x * 300),
@@ -278,7 +295,9 @@ function GameBoardBuilder(options)
             }
             sceneWhiteout.push(sceneRow)
         }
-        for (var y = 1; y <= gameStatus.currTry; y++) {
+        removeStop = gameStatus.currTry()
+        removeStop += gameStatus.currSlotIdx() == 0 ? 0 : 1
+        for (var y = 1; y < removeStop; y++) {
             sceneWhiteout.shift()
         }
         return sceneWhiteout
