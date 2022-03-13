@@ -36,7 +36,9 @@ function KeyBoard(options)
     this.handleMouseDown = function(pos)
     {
         for (var node of this.sceneKeyBoard) {
-            node.handleMouseDown(pos)
+            if ("handleMouseDown" in node) {
+                node.handleMouseDown(pos)
+            }
         }
     }
 }
@@ -47,23 +49,28 @@ function KeyBoardBuilder(options)
     this.resources = options.resources
     this.audioCache = options.audioCache
 
-    this.build = function(commandReceiver)
+    this.build = function(level, commandReceiver)
     {
         var sceneKeyBoard = []
         sceneKeyBoard.push(new ButtonLimitedClicks({
             x: 0,
-            y: 2200,
+            y: 2100,
             image: this.resources.getImage("playTarget"),
             inactiveImage: this.resources.getImage("playTargetInactive"),
             maxClicks: 1
         }, new PlayTargetNotesCommand(commandReceiver)))
         sceneKeyBoard.push(new ButtonLimitedClicks({
             x: 1800,
-            y: 2200,
+            y: 2100,
             image: this.resources.getImage("playUser"),
-            inactiveImage: this.resources.getImage("playTargetInactive"),
+            inactiveImage: this.resources.getImage("playUserInactive"),
             maxClicks: 1
         }, new PlayUserNotesCommand(commandReceiver)))
+        sceneKeyBoard.push(new Sprite({
+            image: this.resources.getImage("level" + level),
+            x: 900,
+            y: 2150
+        }))
         var whiteNotes = ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"]
         keyImage = this.resources.getImage("keyWhite")
         for (var i = 0; i < 8; i++) {

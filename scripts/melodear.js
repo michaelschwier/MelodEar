@@ -422,6 +422,12 @@
   resources.addImage("playTarget", "images/playTarget.png")
   resources.addImage("playTargetInactive", "images/playTargetInactive.png")
   resources.addImage("playUser", "images/playUser.png")
+  resources.addImage("playUserInactive", "images/playUserInactive.png")
+  resources.addImage("level1", "images/level1.png")
+  resources.addImage("level2", "images/level2.png")
+  resources.addImage("level3", "images/level3.png")
+  resources.addImage("level4", "images/level4.png")
+  resources.addImage("level5", "images/level5.png")
   // Translated Images
 
   resources.loadAndCallWhenDone(initGame);
