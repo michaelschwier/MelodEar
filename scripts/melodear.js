@@ -12,17 +12,20 @@
   var mouseIsPressed = false;
   var resultsShareText = ""
 
-  // ----- Dialoges ---------------------------------------------------------------------
+  // ----- Rules Dialog ---------------------------------------------------------------------
   var rulesModal = document.getElementById("rulesModal");
-  var rulesCloseButton = document.getElementById("rulesCloseButton");
   rulesModal.onclick = function() {
     rulesModal.style.display = "none";
   }
 
+  // ----- Results Dialog ---------------------------------------------------------------------
   var resultsModal = document.getElementById("resultsModal")
-  resultsModal.onclick = function() {
+
+  var resultsCloseButton = document.getElementById("resultsCloseButton")
+  resultsCloseButton.onclick = function() {
     resultsModal.style.display = "none";
   }
+
   var shareButton = document.getElementById("shareButton")
   shareButton.onclick = function(event) {
     event.stopImmediatePropagation()
@@ -38,6 +41,14 @@
     }
   }
 
+  var newGameButtonWasPressed = false
+  var newGameButton = document.getElementById("newGameButton")
+  newGameButton.onclick = function(event) {
+    event.stopImmediatePropagation()
+    newGameButtonWasPressed = true
+  }
+
+  // ----- Cookie Policy Dialog ---------------------------------------------------------------------
   var cookiePolicyModal = document.getElementById("cookiePolicyModal")
   var acceptCookiesButton = document.getElementById("acceptCookiesButton")
   acceptCookiesButton.onclick = function(event) {
@@ -45,6 +56,7 @@
     setCookie("cookiesAllowed", "True", 1000)
     cookiePolicyModal.style.display = "none"
   }
+
   var rejectCookiesButton = document.getElementById("rejectCookiesButton")
   rejectCookiesButton.onclick = function(event) {
     event.stopImmediatePropagation()
@@ -261,10 +273,12 @@
   function MainGamePhase(startLevel)
   {
     document.getElementById("gameContainer").style.backgroundImage="none"
+    hideResults()
     this.gameStatus = new GameStatus({level: startLevel})
     this.gameStatus.load()
     this.gameStatus.save()
     this.finishedDelay = 1.0;
+    this.countdown = null
     GamePhase.call(this, levelCreator.getScene(this.gameStatus, this));
 
 
@@ -276,26 +290,44 @@
       }
       else {
         showResults(this.gameStatus, success)
+        this.countdown = new Countdown(this.gameStatus)
       }
     }
     
-    // this.super_update = this.update;
-    // this.update = function(frameTime)
-    // {
-    //   this.super_update(frameTime);
-    // }
+    this.GamePhase_update = this.update;
+    this.update = function(frameTime)
+    {
+      if (this.countdown) {
+        this.countdown.updateCountdown()
+      }
+      this.GamePhase_update(frameTime);
+    }
 
     this.getNextGamePhase = function()
     {
+      if (this.countdown && this.countdown.expired()) {
+        if (newGameButtonWasPressed || (resultsModal.style.display == "none")) {
+          return new MainGamePhase(1)
+        }
+      }
       return this;
     }
-
   }
   
 
   // --------------------------------------------------------------------------
+  function hideResults()
+  {
+    document.getElementById("newGameButton").disabled = true
+    newGameButtonWasPressed = false
+    resultsModal.style.display = "none";
+  }
+
+  // --------------------------------------------------------------------------
   function showResults(gameStatus, success)
   {
+    document.getElementById("newGameButton").disabled = true
+    newGameButtonWasPressed = false
     noSucesses = success ? gameStatus.level : gameStatus.level - 1
     if (noSucesses > 0) {
       document.getElementById("resultsTitle").textContent = "Congratulations, you finished Level " + noSucesses
@@ -303,7 +335,7 @@
     else {
       document.getElementById("resultsTitle").textContent = "Sorry, better luck next time!"
     }
-    content = "<table><tr><th>Level</th><th>Finished</th><th>Tries</th></tr>"
+    content = "<table style=\"margin-left: auto; margin-right: auto;\"><tr><th>Level</th><th>Finished</th><th>Tries</th></tr>"
     for (var i = 0; i < 5; i++) {
       if (gameStatus.levelTries[i] > 0) {
         content += "<tr><td>" + (i + 1) + "</td><td>" + (gameStatus.successes[i] ? "Yes" : "No") + "</td><td>" + gameStatus.levelTries[i] + "</td></tr>"
@@ -329,7 +361,7 @@
         resultsShareText += uRepRight + uTimes + gameStatus.levelTries[levelIdx] + "\n"
       }
     }
-    resultsModal.style.display = "block";
+    resultsModal.style.display = "block"
   }
 
 

@@ -46,15 +46,21 @@
     <!-- Modal Box Results -->
     <div id="resultsModal" class="modal">
       <div class="modalContent">
-        <div>
+        <div style="text-align: center">
           <b id="resultsTitle">TITLE</b><span id="resultsCloseButton" class="closeModalButton">&times;</span>
         </div>
         <hr>
         <div>
-          <p><b>RESULTS</b></p>
+          <p style="text-align: center"><b>RESULTS</b></p>
           <div id="resultsResults">
           </div>
-          <button id=shareButton>Share Results</button>
+          <p style="text-align: center"><button id=shareButton>Share Results</button></p>
+        </div>
+        <hr>
+        <div>
+          <p style="text-align: center">New MelodEars available in </p>
+          <h1 id="countdown" style="text-align: center">00:00:00</h1>
+          <p style="text-align: center"><button id=newGameButton>Play New Game</button></p>
         </div>
       </div>
     </div>
@@ -79,6 +85,7 @@
     <script src="scripts/cookies.js?v=0.1.0"></script>
     <script src="scripts/crashGraphicsEngine.js?v=0.1.0"></script>
     <script src="scripts/gameStatus.js?v=0.1.0"></script>
+    <script src="scripts/countdown.js?v=0.1.0"></script>
     <script src="scripts/commands.js?v=0.1.0"></script>
     <script src="scripts/gameBoard.js?v=0.1.0"></script>
     <script src="scripts/keyBoard.js?v=0.1.0"></script>
