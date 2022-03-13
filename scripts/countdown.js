@@ -6,8 +6,6 @@ function Countdown(gameStatus)
     // this.tomorrow.setHours(0,0,0,0)
     var minutes = (Math.floor(dateTime[4] / 5) + 1) * 5
     this.tomorrow = new Date(dateTime[0], dateTime[1], dateTime[2], dateTime[3], minutes, 0)
-    console.log(dateTime)
-    console.log(this.tomorrow)
 
     this.updateCountdown = function() 
     {

@@ -192,7 +192,7 @@ function GameBoardBuilder(options)
     this.build = function(targetNotes, gameStatus, callback)
     {
         var state = this.determineStateFromGameStatus(gameStatus)
-        console.log(state)
+        // console.log(state)
         return new GameBoard({
             gameStatus: gameStatus,
             state: state,

@@ -1,7 +1,7 @@
 (function() {
   // ----- Global variables -------------------------------
-  var language = "de"
-  var isPhoneGapApp = false;
+  // var language = "de"
+  // var isPhoneGapApp = false;
   var lastTimeStamp = null;
   var resources;
   var audioCache = {};
@@ -421,7 +421,7 @@
   window.addEventListener('resize', resizeGame);
   window.addEventListener('orientationchange', resizeGame);
 
-  language = getLanguage()
+  // language = getLanguage()
   // console.log("Switching game language to", language)
 
   if (!getCookie("cookiesAllowed")) {
