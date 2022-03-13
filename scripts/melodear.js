@@ -341,7 +341,7 @@
         content += "<tr><td>" + (i + 1) + "</td><td>" + (gameStatus.successes[i] ? "Yes" : "No") + "</td><td>" + gameStatus.levelTries[i] + "</td></tr>"
       }
       else {
-        content += "<tr><td>" + (i + 1) + "</td><td>No</td><td>N/A</td></tr>"
+        content += "<tr><td>" + (i + 1) + "</td><td>No</td><td>-</td></tr>"
       }
     }
     content += "</table>"

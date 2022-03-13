@@ -1,16 +1,17 @@
 function Countdown(gameStatus)
 {
-    dateStrings = gameStatus.date.split("-")
-    var yyyy = parseInt(dateStrings[0])
-    var mm = parseInt(dateStrings[1]) - 1
-    var dd = parseInt(dateStrings[2])
-    this.tomorrow = new Date(yyyy, mm, dd)
-    this.tomorrow.setDate(this.tomorrow.getDate() + 1)
-    this.tomorrow.setHours(0,0,0,0)
+    var dateTime = getDateTimeInts(gameStatus.date)
+    // this.tomorrow = new Date(dateTime[0], dateTime[1], dateTime[2])
+    // this.tomorrow.setDate(this.tomorrow.getDate() + 1)
+    // this.tomorrow.setHours(0,0,0,0)
+    var minutes = (Math.floor(dateTime[4] / 5) + 1) * 5
+    this.tomorrow = new Date(dateTime[0], dateTime[1], dateTime[2], dateTime[3], minutes, 0)
+    console.log(dateTime)
+    console.log(this.tomorrow)
 
     this.updateCountdown = function() 
     {
-        disableNewGameButton = this.expired() ? false : false
+        var disableNewGameButton = this.expired() ? false : true
         document.getElementById("newGameButton").disabled = disableNewGameButton
         var cds = this.countdownString()
         document.getElementById("countdown").innerHTML = cds
@@ -18,7 +19,7 @@ function Countdown(gameStatus)
 
     this.expired = function()
     {
-        cds = this.countdownString()
+        var cds = this.countdownString()
         return cds == "00:00:00"
     }
 
@@ -32,9 +33,9 @@ function Countdown(gameStatus)
         var hours = Math.floor(diff / (1000 * 60 * 60))
         var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
         var seconds = Math.floor((diff % (1000 * 60)) / 1000)
-        hours = String(hours).padStart(2, '0')
-        minutes = String(minutes).padStart(2, '0')
-        seconds = String(seconds).padStart(2, '0')
+        var hours = String(hours).padStart(2, '0')
+        var minutes = String(minutes).padStart(2, '0')
+        var seconds = String(seconds).padStart(2, '0')
         return hours + ":" + minutes + ":" + seconds
     }
 }

@@ -15,8 +15,8 @@ function GameStatus(options={})
         this.successes[this.level - 1] = 0
     }
 
-    this.date = options.date || getCurrLocalDateString()
-    this.gameIdx = options.gameIdx || getTodaysGameIndex()
+    this.date = options.date || getCurrLocalDateTimeString()
+    this.gameIdx = options.gameIdx || getGameIndexByDateTime(this.date)
     this.level = options.level || 1
     this.levelTries = Array(5).fill(-1)
     this.successes = Array(5).fill(0)
@@ -90,7 +90,7 @@ function GameStatus(options={})
         try {
             var date = getCookie("gsDate")
             var gameIdx = parseInt(getCookie("gsGameIdx"))
-            if (gameIdx != getTodaysGameIndex()) {
+            if (gameIdx != getGameIndexByDateTime(getCurrLocalDateTimeString())) {
                 return
             }
             var level = parseInt(getCookie("gsLevel"))
