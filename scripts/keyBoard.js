@@ -53,15 +53,15 @@ function KeyBoardBuilder(options)
     {
         var sceneKeyBoard = []
         sceneKeyBoard.push(new ButtonLimitedClicks({
-            x: 0,
-            y: 2100,
+            x: 1800,
+            y: 2130,
             image: this.resources.getImage("playTarget"),
             inactiveImage: this.resources.getImage("playTargetInactive"),
             maxClicks: 1
         }, new PlayTargetNotesCommand(commandReceiver)))
         sceneKeyBoard.push(new ButtonLimitedClicks({
-            x: 1800,
-            y: 2100,
+            x: 0,
+            y: 2130,
             image: this.resources.getImage("playUser"),
             inactiveImage: this.resources.getImage("playUserInactive"),
             maxClicks: 1
@@ -69,7 +69,7 @@ function KeyBoardBuilder(options)
         sceneKeyBoard.push(new Sprite({
             image: this.resources.getImage("level" + level),
             x: 900,
-            y: 2150
+            y: 2175
         }))
         var whiteNotes = ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"]
         keyImage = this.resources.getImage("keyWhite")
