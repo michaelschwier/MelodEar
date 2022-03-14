@@ -52,31 +52,47 @@ function KeyBoardBuilder(options)
     this.build = function(level, commandReceiver)
     {
         var sceneKeyBoard = []
+        sceneKeyBoard.push(new Sprite({
+            image: this.resources.getImage("title"),
+            x: 800,
+            y: 0
+        }))
+        sceneKeyBoard.push(new Sprite({
+            image: this.resources.getImage("info"),
+            x: 2000,
+            y: 20
+        }))
+        sceneKeyBoard.push(new Sprite({
+            image: this.resources.getImage("help"),
+            x: 2200,
+            y: 20
+        }))
+
         sceneKeyBoard.push(new ButtonLimitedClicks({
-            x: 1800,
-            y: 2130,
-            image: this.resources.getImage("playTarget"),
-            inactiveImage: this.resources.getImage("playTargetInactive"),
-            maxClicks: 1
-        }, new PlayTargetNotesCommand(commandReceiver)))
-        sceneKeyBoard.push(new ButtonLimitedClicks({
-            x: 0,
-            y: 2130,
+            x: 40,
+            y: 2330,
             image: this.resources.getImage("playUser"),
             inactiveImage: this.resources.getImage("playUserInactive"),
             maxClicks: 1
         }, new PlayUserNotesCommand(commandReceiver)))
+        sceneKeyBoard.push(new ButtonLimitedClicks({
+            x: 1770,
+            y: 2330,
+            image: this.resources.getImage("playTarget"),
+            inactiveImage: this.resources.getImage("playTargetInactive"),
+            maxClicks: 1
+        }, new PlayTargetNotesCommand(commandReceiver)))
         sceneKeyBoard.push(new Sprite({
             image: this.resources.getImage("level" + level),
             x: 900,
-            y: 2175
+            y: 2375
         }))
         var whiteNotes = ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"]
         keyImage = this.resources.getImage("keyWhite")
         for (var i = 0; i < 8; i++) {
             var whiteKey = new Button({
                     x: i * 300,
-                    y: 2400,
+                    y: 2600,
                     clickAreaY: 2700,
                     clickAreaHeight: 300,
                     image: keyImage
@@ -88,7 +104,7 @@ function KeyBoardBuilder(options)
         for (var i of [0,1,3,4,5]) {
             var blackKey = new Button({
                 x: 160 + (i * 300),
-                y: 2400,
+                y: 2600,
                 image: keyImage
                 }, 
                 new DummyCommand())

@@ -87,18 +87,18 @@
   function resizeGame()
   {
     var gameContainer = document.getElementById('gameContainer');
-    var referenceWidthToHeight = 800 / 1000;
+    var referenceWidthToHeight = 750 / 1000;
     var newWidth = window.innerWidth;
     var newHeight = window.innerHeight;
     var newWidthToHeight = newWidth / newHeight;
     
     if (newWidthToHeight > referenceWidthToHeight) {
         gameContainer.style.height = '100vh';
-        gameContainer.style.width = '80vh';
-        document.documentElement.style.setProperty('--modal-width', '75vh');
+        gameContainer.style.width = '75vh';
+        document.documentElement.style.setProperty('--modal-width', '70vh');
     } 
     else {
-      gameContainer.style.height = '125vw';
+      gameContainer.style.height = '133vw';
       gameContainer.style.width = '100vw';
       document.documentElement.style.setProperty('--modal-width', '94vw');
     }
@@ -400,7 +400,7 @@
 
     canvas = document.getElementById("gameCanvas");
     canvas.width = 2400;
-    canvas.height = 3000;
+    canvas.height = 3200;
 
     levelCreator = new LevelCreator(resources, audioCache)
     gamePhase = new IntroPhase();
@@ -455,6 +455,9 @@
   resources.addImage("playTargetInactive", "images/playTargetInactive.png")
   resources.addImage("playUser", "images/playUser.png")
   resources.addImage("playUserInactive", "images/playUserInactive.png")
+  resources.addImage("title", "images/title.png")
+  resources.addImage("help", "images/help.png")
+  resources.addImage("info", "images/info.png")
   resources.addImage("level1", "images/level1.png")
   resources.addImage("level2", "images/level2.png")
   resources.addImage("level3", "images/level3.png")

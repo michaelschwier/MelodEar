@@ -43,7 +43,7 @@ th, td {
 	background-size: 100%;
 	background-repeat: no-repeat;
 	height:100vh;
-	width:80vh;
+	width:75vh;
 	margin: 0 auto;
 	padding: 0px;
 	-webkit-user-select: none;  
@@ -60,7 +60,7 @@ th, td {
 }
 
 :root {
-    --modal-width: 75vh;
+    --modal-width: 70vh;
 }
 
 .modal, .modalDark {
