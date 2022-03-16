@@ -395,7 +395,10 @@
   // --------------------------------------------------------------------------
   function initGame()
   {
-    rulesModal.style.display = "block";
+    if (!getCookie("skipRulesAtStart")) {
+      rulesModal.style.display = "block";
+      setCookie("skipRulesAtStart", "True", 1000)
+    }
     document.getElementById("gameContainer").style.backgroundImage="url(\"images/startGame.png\")" 
 
     canvas = document.getElementById("gameCanvas");
