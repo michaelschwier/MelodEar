@@ -82,6 +82,9 @@ function GameBoard(options)
                 this.sceneBoard[this.status.currTry()][this.status.currSlotIdx()].setNote(note)
                 this.setState(States.UserInput)
             }
+            else {
+                showFlashNote("Start your guess with the revealed note in the first slot", 3000)
+            }
         }
         else if (this.state == States.UserInput) {
             this.sceneBoard[this.status.currTry()][this.status.currSlotIdx()].setNote(note)
