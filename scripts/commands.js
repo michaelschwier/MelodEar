@@ -9,6 +9,13 @@ function DummyCommand(message="") {
   }
 }
 
+function ShowHelpCommand() {
+  this.execute = function()
+  {
+    rulesModal.style.display = "block";
+  }
+}
+
 function NotePressedCommand(receiver, note) {
   this.receiver = receiver
   this.note = note

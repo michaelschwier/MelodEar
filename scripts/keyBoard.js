@@ -57,17 +57,18 @@ function KeyBoardBuilder(options)
             x: 800,
             y: 0
         }))
-        sceneKeyBoard.push(new Sprite({
+        sceneKeyBoard.push(new Button({
             image: this.resources.getImage("info"),
             x: 2000,
-            y: 20
-        }))
-        sceneKeyBoard.push(new Sprite({
+            y: 20},
+            new DummyCommand("INFO"))
+        )
+        sceneKeyBoard.push(new Button({
             image: this.resources.getImage("help"),
             x: 2200,
-            y: 20
-        }))
-
+            y: 20},
+            new ShowHelpCommand())
+        )
         sceneKeyBoard.push(new ButtonLimitedClicks({
             x: 40,
             y: 2330,
@@ -93,8 +94,6 @@ function KeyBoardBuilder(options)
             var whiteKey = new Button({
                     x: i * 300,
                     y: 2600,
-                    clickAreaY: 2700,
-                    clickAreaHeight: 300,
                     image: keyImage
                 }, 
                 new NotePressedCommand(commandReceiver, whiteNotes[i]))
@@ -102,12 +101,11 @@ function KeyBoardBuilder(options)
         }
         keyImage = this.resources.getImage("keyBlack")
         for (var i of [0,1,3,4,5]) {
-            var blackKey = new Button({
-                x: 160 + (i * 300),
+            var blackKey = new Sprite({
+                x: 190 + (i * 300),
                 y: 2600,
                 image: keyImage
-                }, 
-                new DummyCommand())
+                })
             sceneKeyBoard.push(blackKey)
         }
         return new KeyBoard({
