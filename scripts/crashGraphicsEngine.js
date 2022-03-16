@@ -485,7 +485,7 @@ function Button(options, command)
   this.clickAreaX = options.clickAreaX || this.x
   this.clickAreaY = options.clickAreaY || this.y
   this.clickAreaWidth = options.clickAreaWidth || this.width
-  this.clickAreaHeigth = options.clickAreaHeigth || this.height
+  this.clickAreaHeight = options.clickAreaHeight || this.height
   this.command = command;
   this.buttonReleaseTime = options.buttonReleaseTime || 0.1;
   this.buttonReleaseCountDown = 0.0;    
@@ -508,7 +508,7 @@ function Button(options, command)
     if (x >= this.clickAreaX 
         && y >= this.clickAreaY 
         && x < this.clickAreaX + this.clickAreaWidth 
-        && y < this.clickAreaY + this.clickAreaHeigth) {
+        && y < this.clickAreaY + this.clickAreaHeight) {
       return true;
     }
     else {
@@ -518,7 +518,7 @@ function Button(options, command)
 
   this.handleMouseDown = function(pos)
   { 
-    // console.log("Button Mouse Down", pos, this.clickAreaX, this.clickAreaY, this.clickAreaWidth, this.clickAreaHeigth)
+    // console.log("Button Mouse Down", pos, this.clickAreaX, this.clickAreaY, this.clickAreaWidth, this.clickAreaHeight)
     if (this.isHit(pos.canvasX, pos.canvasY)) {
       this.buttonReleaseCountDown = this.buttonReleaseTime;
       this.command.execute();
