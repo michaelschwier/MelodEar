@@ -8,9 +8,21 @@
   var canvas;
   var gamePhase;
   var levelCreator;
-  var gameStatusCreator;
   var mouseIsPressed = false;
   var resultsShareText = ""
+
+  // ----- Beta Test Dialog ---------------------------------------------------------------------
+  var betaModal = document.getElementById("betaModal");
+  var betaAcceptButton = document.getElementById("betaAcceptButton")
+  betaAcceptButton.onclick = function() {
+    betaModal.style.display = "none";
+  }
+
+  // ----- Info Dialog ---------------------------------------------------------------------
+  var infoModal = document.getElementById("infoModal");
+  infoModal.onclick = function() {
+    infoModal.style.display = "none";
+  }
 
   // ----- Rules Dialog ---------------------------------------------------------------------
   var rulesModal = document.getElementById("rulesModal");
@@ -289,8 +301,17 @@
         this.scene = levelCreator.getScene(this.gameStatus, this)
       }
       else {
-        showResults(this.gameStatus, success)
         this.countdown = new Countdown(this.gameStatus)
+        showResults(this.gameStatus)
+      }
+    }
+
+    this.showResultsScreen = function() {
+      if (this.countdown) {
+        showResults(this.gameStatus)
+      }
+      else {
+        showFlashNote("Finish your current game to show results", 3000)
       }
     }
     
@@ -324,11 +345,16 @@
   }
 
   // --------------------------------------------------------------------------
-  function showResults(gameStatus, success)
+  function showResults(gameStatus)
   {
     document.getElementById("newGameButton").disabled = true
     newGameButtonWasPressed = false
-    noSucesses = success ? gameStatus.level : gameStatus.level - 1
+    noSucesses = 0
+    for (s of gameStatus.successes) {
+      if (s > 0) {
+        noSucesses++
+      }
+    }
     if (noSucesses > 0) {
       document.getElementById("resultsTitle").textContent = "Congratulations, you finished Level " + noSucesses
     }
@@ -361,6 +387,7 @@
         resultsShareText += uRepRight + uTimes + gameStatus.levelTries[levelIdx] + "\n"
       }
     }
+    resultsShareText += "\nhttps://www.melodear.net"
     resultsModal.style.display = "block"
   }
 
@@ -424,8 +451,7 @@
   window.addEventListener('resize', resizeGame);
   window.addEventListener('orientationchange', resizeGame);
 
-  // language = getLanguage()
-  // console.log("Switching game language to", language)
+  betaModal.style.display = "block"
 
   if (!getCookie("cookiesAllowed")) {
     cookiePolicyModal.style.display = "block";
@@ -461,6 +487,7 @@
   resources.addImage("title", "images/title.png")
   resources.addImage("help", "images/help.png")
   resources.addImage("info", "images/info.png")
+  resources.addImage("results", "images/results.png")
   resources.addImage("level1", "images/level1.png")
   resources.addImage("level2", "images/level2.png")
   resources.addImage("level3", "images/level3.png")

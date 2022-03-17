@@ -9,6 +9,18 @@
     <div id="gameContainer">
       <canvas id="gameCanvas"></canvas>
     </div>
+    <!-- Modal Box Info -->
+    <div id="infoModal" class="modal">
+      <div class="modalContent">
+        <div>
+          <b>INFO / CREDITS / IMPRESSUM</b><span id="infoCloseButton" class="closeModalButton">&times;</span>
+        </div>
+        <hr>
+        <div>
+          <p>blabla blablalba.</p>      
+        </div>
+      </div>
+    </div>
     <!-- Modal Box Rules -->
     <div id="rulesModal" class="modal">
       <div class="modalContent">
@@ -17,10 +29,9 @@
         </div>
         <hr>
         <div>
-          <p>Guess the secret melody that you hear. For reference the first note of the melody is already revealed.</p>
-          <p>Enter your melody guess on the keyboard, including the first note.</p>
-          <p>After each guess, the color of tiles will change to show which notes were correct and which were wrong. Before starting your next guess you are allowed to replay the secret melody and your last guess one time.</p>
-          <p>Reach the next level by guessing the correct melody in five or less tries. There are five levels, the first has a two-note melody, the last a six-note melody.</p>
+          <p>Guess the secret melody that you hear. Enter your melody guess on the keyboard, starting with the already revealed first note.</p>
+          <p>After each guess, the color of tiles will change to show which notes were correct and which were wrong. Before starting your next guess you are allowed to replay the secret melody and your latest guess one time.</p>
+          <p>Reach the next level by guessing the correct melody in five or less tries. Can you finish all five levels?</p>
           <hr>
           <p><b>Examples</b></p>
           <p>
@@ -72,10 +83,38 @@
         </div>
         <hr>
         <div>
-          <p>We are only using cookies that are absolutely necessary for the game to function as intended. To fully enjoy playing MelodEar please accept the essential cookies.</p>
+          <p>We are only using cookies that are necessary for the game to function as intended. We absolutely value your privacy and hence we don't use tracking cookies and we don't collect personal data.</p>
+          <p>To fully enjoy playing MelodEar please accept the essential cookies.</p>
           <p>If you reject even the essential cookies, some features of the game will not work.</p>
-          <p><button id=acceptCookiesButton>Accept Essential Cookies</button></p>
-          <p><button id=rejectCookiesButton>Reject Essential Cookies</button></p>
+          <p style="text-align: center"><button id=acceptCookiesButton>Accept Essential Cookies</button></p>
+          <p style="text-align: center"><button id=rejectCookiesButton>Reject All Cookies</button></p>
+        </div>
+      </div>
+    </div>
+    <!-- Modal Box Beta Test -->
+    <div id="betaModal" class="modal" style="background-color: rgb(0,0,0);">
+      <div class="modalContent">
+        <div>
+          <b>BETA TEST</b>
+        </div>
+        <hr>
+        <div>
+          <p>This is the beta test version of MelodEar. 
+            The game is currently still under development but you are welcome to try 
+            it out already. However, be aware that you might encounter some weird behaviour or bugs 
+            here and there. Also some features are different from how they'll be in the 
+            final version. A particular difference is that for testing purposes you get to play a new game every 5 
+            minutes. The final version will have only one game per day.
+          </p>
+          <p>
+            If you enounter any bugs or issues, please write us at <a href="mailto:betatest@melodear.net">betatest@melodear.net</a>.
+          </p>
+          <p>
+            Finally we'd like to ask you to please not share this site or your results 
+            with others just yet. Please wait until the official release of MelodEar.
+          </p>
+          <p>But now enjoy playing ...</p>
+          <p style="text-align: center"><button id=betaAcceptButton>OK, let's play!</button></p>
         </div>
       </div>
     </div>

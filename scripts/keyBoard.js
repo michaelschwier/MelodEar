@@ -49,7 +49,7 @@ function KeyBoardBuilder(options)
     this.resources = options.resources
     this.audioCache = options.audioCache
 
-    this.build = function(level, commandReceiver)
+    this.build = function(level, commandReceiver, resultsCollector)
     {
         var sceneKeyBoard = []
         sceneKeyBoard.push(new Sprite({
@@ -59,15 +59,21 @@ function KeyBoardBuilder(options)
         }))
         sceneKeyBoard.push(new Button({
             image: this.resources.getImage("info"),
-            x: 2000,
+            x: 40,
             y: 20},
-            new DummyCommand("INFO"))
+            new ShowInfoCommand())
         )
         sceneKeyBoard.push(new Button({
             image: this.resources.getImage("help"),
-            x: 2200,
+            x: 240,
             y: 20},
             new ShowHelpCommand())
+        )
+        sceneKeyBoard.push(new Button({
+            image: this.resources.getImage("results"),
+            x: 2200,
+            y: 20},
+            new ShowResultsCommand(resultsCollector))
         )
         sceneKeyBoard.push(new ButtonLimitedClicks({
             x: 40,

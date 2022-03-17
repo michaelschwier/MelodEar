@@ -9,10 +9,26 @@ function DummyCommand(message="") {
   }
 }
 
+function ShowInfoCommand() {
+  this.execute = function()
+  {
+    infoModal.style.display = "block"
+  }
+}
+
 function ShowHelpCommand() {
   this.execute = function()
   {
     rulesModal.style.display = "block";
+  }
+}
+
+function ShowResultsCommand(resultsCollector) {
+  this.resultsCollector = resultsCollector
+
+  this.execute = function()
+  {
+    this.resultsCollector.showResultsScreen()
   }
 }
 
