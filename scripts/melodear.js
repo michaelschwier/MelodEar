@@ -15,6 +15,7 @@
   var betaModal = document.getElementById("betaModal");
   var betaAcceptButton = document.getElementById("betaAcceptButton")
   betaAcceptButton.onclick = function() {
+    setCookie("showBetaTestNotice", "True", 1)
     betaModal.style.display = "none";
   }
 
@@ -451,7 +452,9 @@
   window.addEventListener('resize', resizeGame);
   window.addEventListener('orientationchange', resizeGame);
 
-  betaModal.style.display = "block"
+  if (!getCookie("showBetaTestNotice")) {
+    betaModal.style.display = "block"
+  }
 
   if (!getCookie("cookiesAllowed")) {
     cookiePolicyModal.style.display = "block";

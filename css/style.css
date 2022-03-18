@@ -16,6 +16,11 @@ body {
 h1 { 
 	font-weight: lighter; 
 }
+
+a:hover, a:visited, a:link, a:active
+{
+    text-decoration: none;
+}
 	
 p {
 	text-align: justify;
