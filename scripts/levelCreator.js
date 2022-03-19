@@ -23,7 +23,12 @@ function LevelCreator(resources, audioCache)
     var randomNumberGenerator = new Math.seedrandom(gameStatus.gameIdx.toString() + "-" + gameStatus.level.toString())
     for (var i = 0; i < gameStatus.level; i++) {
       var randomIdx = Math.floor(randomNumberGenerator() * availableNotes.length)
-      notes.push(availableNotes[randomIdx])
+      var nextNote = availableNotes[randomIdx]
+      while (nextNote == notes[notes.length - 1]) {
+        randomIdx = Math.floor(randomNumberGenerator() * availableNotes.length)
+        nextNote = availableNotes[randomIdx]  
+      }
+      notes.push(nextNote)
     }
     scene.gameBoard = this.gameBoardBuilder.build(notes, gameStatus, resultsCollector)
     scene.keyBoard = this.keyBoardBuilder.build(gameStatus.level, scene.gameBoard, resultsCollector)
