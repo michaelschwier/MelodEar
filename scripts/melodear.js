@@ -14,7 +14,8 @@
   // ----- Beta Test Dialog ---------------------------------------------------------------------
   var betaModal = document.getElementById("betaModal");
   var betaAcceptButton = document.getElementById("betaAcceptButton")
-  betaAcceptButton.onclick = function() {
+  betaAcceptButton.onclick = function(event) {
+    event.stopImmediatePropagation()
     setCookie("showBetaTestNotice", "True", 1)
     betaModal.style.display = "none";
   }
