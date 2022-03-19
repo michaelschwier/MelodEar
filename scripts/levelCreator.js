@@ -1,3 +1,5 @@
+const availableNotes = ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"]
+
 function LevelCreator(resources, audioCache)
 {
   // this.levelDefinitions = levelDefinitions;
@@ -15,8 +17,15 @@ function LevelCreator(resources, audioCache)
   this.getScene = function(gameStatus, resultsCollector)
   {
     var scene = {}
-    var notes = ["c4", "e4", "g4", "e4", "b4", "e4", "c4"]
-    scene.gameBoard = this.gameBoardBuilder.build(notes.slice(0, gameStatus.level + 1), gameStatus, resultsCollector)
+    var initialRandomNoteIdx = new Math.seedrandom(gameStatus.gameIdx.toString())
+    initialRandomNoteIdx = Math.floor(initialRandomNoteIdx() * availableNotes.length)
+    var notes = [availableNotes[initialRandomNoteIdx]]
+    var randomNumberGenerator = new Math.seedrandom(gameStatus.gameIdx.toString() + "-" + gameStatus.level.toString())
+    for (var i = 0; i < gameStatus.level; i++) {
+      var randomIdx = Math.floor(randomNumberGenerator() * availableNotes.length)
+      notes.push(availableNotes[randomIdx])
+    }
+    scene.gameBoard = this.gameBoardBuilder.build(notes, gameStatus, resultsCollector)
     scene.keyBoard = this.keyBoardBuilder.build(gameStatus.level, scene.gameBoard, resultsCollector)
     // HACK, think about smth nicer here
     scene.gameBoard.addStateChangeListener(scene.keyBoard)

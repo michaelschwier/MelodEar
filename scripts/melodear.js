@@ -7,7 +7,6 @@
   var audioCache = {};
   var canvas;
   var gamePhase;
-  var levelCreator;
   var mouseIsPressed = false;
   var resultsShareText = ""
 
@@ -288,19 +287,20 @@
   {
     document.getElementById("gameContainer").style.backgroundImage="none"
     hideResults()
+    this.levelCreator = new LevelCreator(resources, audioCache)
     this.gameStatus = new GameStatus({level: startLevel})
     this.gameStatus.load()
     this.gameStatus.save()
     this.finishedDelay = 1.0;
     this.countdown = null
-    GamePhase.call(this, levelCreator.getScene(this.gameStatus, this));
+    GamePhase.call(this, this.levelCreator.getScene(this.gameStatus, this));
 
 
     this.levelFinished = function(success) {
       if (success && (this.gameStatus.level < 5)) {
         this.gameStatus.nextLevel()
         this.gameStatus.save()
-        this.scene = levelCreator.getScene(this.gameStatus, this)
+        this.scene = this.levelCreator.getScene(this.gameStatus, this)
       }
       else {
         this.countdown = new Countdown(this.gameStatus)
@@ -434,7 +434,6 @@
     canvas.width = 2400;
     canvas.height = 3200;
 
-    levelCreator = new LevelCreator(resources, audioCache)
     gamePhase = new IntroPhase();
 
     canvas.addEventListener("touchmove", handleTouchMove);
