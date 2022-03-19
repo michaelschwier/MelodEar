@@ -1,3 +1,5 @@
+const yOffsetBoard = 300
+
 const States = Object.freeze({
     PlayingTargetNotes: "PlayingTargetNotes",
     PlayingUserNotes:   "PlayingUserNotes",
@@ -233,13 +235,13 @@ function GameBoardBuilder(options)
             sceneRow.push(new Sprite({
                 image: this.resources.getImage("key"),
                 x: 150,
-                y: 250 + (400 * y)
+                y: yOffsetBoard + (400 * y)
             }))
             for (var x = 0; x < 6; x++) {
                 sceneRow.push(new Sprite({
                     image: this.resources.getImage("lines"),
                     x: 450 + (x * 300),
-                    y: 250 + (400 * y)
+                    y: yOffsetBoard + (400 * y)
                 }))
             }
             sceneBackground.push(sceneRow)
@@ -253,11 +255,11 @@ function GameBoardBuilder(options)
         for (var y = 0; y < 5; y++) {
             var sceneRow = []
             var initFrame = this.determineInitFrameFromGameStatus(gameStatus, targetNotes, y, 0)
-            sceneRow.push(new Slot(450, 250 + (400 * y), targetNotes[0], gameStatus.userNotes[y], 0, this.resources, this.audioCache, y*0.05, targetNotes[0], initFrame))
+            sceneRow.push(new Slot(450, yOffsetBoard + (400 * y), targetNotes[0], gameStatus.userNotes[y], 0, this.resources, this.audioCache, y*0.05, targetNotes[0], initFrame))
             for (var x = 1; x < targetNotes.length; x++) {
                 var initNote = gameStatus.userNotes[y][x]
                 var initFrame = this.determineInitFrameFromGameStatus(gameStatus, targetNotes, y, x)
-                sceneRow.push(new Slot(450 + (x * 300), 250 + (400 * y), targetNotes[x], gameStatus.userNotes[y], x, this.resources, this.audioCache, y*0.05 + x*0.08, initNote, initFrame))
+                sceneRow.push(new Slot(450 + (x * 300), yOffsetBoard + (400 * y), targetNotes[x], gameStatus.userNotes[y], x, this.resources, this.audioCache, y*0.05 + x*0.08, initNote, initFrame))
             }
             sceneBoard.push(sceneRow)
         }
@@ -293,7 +295,7 @@ function GameBoardBuilder(options)
                 sceneRow.push(new Sprite({
                     image: this.resources.getImage("whiteout"),
                     x: 150 + (x * 300),
-                    y: 250 + (400 * y)
+                    y: yOffsetBoard + (400 * y)
                 }))
             }
             sceneWhiteout.push(sceneRow)
