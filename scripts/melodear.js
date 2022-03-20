@@ -86,14 +86,14 @@
   // --------------------------------------------------------------------------
   function setupAudioCache()
   {
-    audioCache["c4"] = new Howl({src: ["audio/c4.mp3"]});
-    audioCache["d4"] = new Howl({src: ["audio/d.mp3"]});
-    audioCache["e4"] = new Howl({src: ["audio/e.mp3"]});
-    audioCache["f4"] = new Howl({src: ["audio/f.mp3"]});
-    audioCache["g4"] = new Howl({src: ["audio/g.mp3"]});
-    audioCache["a4"] = new Howl({src: ["audio/a.mp3"]});
-    audioCache["b4"] = new Howl({src: ["audio/b.mp3"]});
-    audioCache["c5"] = new Howl({src: ["audio/c5.mp3"]});  
+    audioCache["c4"] = new Howl({src: ["audios/c4.mp3"]});
+    audioCache["d4"] = new Howl({src: ["audios/d4.mp3"]});
+    audioCache["e4"] = new Howl({src: ["audios/e4.mp3"]});
+    audioCache["f4"] = new Howl({src: ["audios/f4.mp3"]});
+    audioCache["g4"] = new Howl({src: ["audios/g4.mp3"]});
+    audioCache["a4"] = new Howl({src: ["audios/a4.mp3"]});
+    audioCache["b4"] = new Howl({src: ["audios/b4.mp3"]});
+    audioCache["c5"] = new Howl({src: ["audios/c5.mp3"]});  
   }
 
   // --------------------------------------------------------------------------
@@ -202,7 +202,7 @@
       { 
         this.startGame = true;
         // hack to convince Safari and other browsers to play audio
-        dummyAudio = new Audio("audio/silence.mp3");
+        dummyAudio = new Audio("audios/silence.mp3");
         dummyAudio.play();
         setupAudioCache();
       }
