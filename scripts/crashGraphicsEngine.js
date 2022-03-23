@@ -531,25 +531,40 @@ function ButtonLimitedClicks(options, command)
   Button.call(this, options, command)
   this.maxClicks = options.maxClicks
   this.currClicks = 0
+  this.active = true
   this.mainImage = options.image
   this.inactiveImage = options.inactiveImage
 
   this.reset = function()
   {
     this.currClicks = 0
-    this.image = this.mainImage
+    this.activate()
+  }
+
+  this.activate = function()
+  {
+    this.active = true
+    if (this.currClicks < this.maxClicks) {
+      this.image = this.mainImage
+    }
+  }
+
+  this.deactivate = function()
+  {
+    this.active = false
+    this.image = this.inactiveImage
   }
 
   this.Button_handleMouseDowns = this.handleMouseDown
   this.handleMouseDown = function(pos)
   {
     if (this.isHit(pos.canvasX, pos.canvasY)) {
-      if (this.currClicks < this.maxClicks) {
+      if (this.active && (this.currClicks < this.maxClicks)) {
         this.Button_handleMouseDowns(pos)
+        this.currClicks++
       }
-      this.currClicks++
-      if (this.currClicks == this.maxClicks) {
-        this.image = this.inactiveImage
+      if (this.currClicks >= this.maxClicks) {
+        this.deactivate()
       }
     }
   }

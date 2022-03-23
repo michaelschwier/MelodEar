@@ -13,6 +13,22 @@ function KeyBoard(options)
                 }
             }    
         }
+        else if ((oldState == States.Idle) && (newState != States.Idle)) {
+            for (var layer of this.scene) {
+                for (var node of layer) {
+                    if ("deactivate" in node)
+                    node.deactivate()
+                }
+            }    
+        }
+        else if ((oldState != States.Idle) && (newState == States.Idle)) {
+            for (var layer of this.scene) {
+                for (var node of layer) {
+                    if ("activate" in node)
+                    node.activate()
+                }
+            }    
+        }
     }
 
     this.update = function(frameTime = 0)
