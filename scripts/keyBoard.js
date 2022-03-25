@@ -1,7 +1,8 @@
 function KeyBoard(options)
 {
     this.sceneKeyBoard = options.sceneKeyBoard
-    this.scene = [this.sceneKeyBoard]
+    this.sceneNoteOverlay = options.sceneNoteOverlay
+    this.scene = [this.sceneKeyBoard, this.sceneNoteOverlay]
 
     this.stateChanged = function(oldState, newState)
     {
@@ -68,6 +69,7 @@ function KeyBoardBuilder(options)
     this.build = function(level, commandReceiver, resultsCollector)
     {
         var sceneKeyBoard = []
+        var sceneNoteOverlay = []
         sceneKeyBoard.push(new Sprite({
             image: this.resources.getImage("title"),
             x: 800,
@@ -120,6 +122,16 @@ function KeyBoardBuilder(options)
                 }, 
                 new NotePressedCommand(commandReceiver, whiteNotes[i]))
             sceneKeyBoard.push(whiteKey)
+            var noteHint = new Sprite({
+                x: 90 + (i * 300),
+                y: 2950,
+                width: 120,
+                height: 240,
+                clipX: 50,
+                clipWidth: 200,
+                image: this.resources.getImage(whiteNotes[i])
+            })
+            sceneNoteOverlay.push(noteHint)
         }
         keyImage = this.resources.getImage("keyBlack")
         for (var i of [0,1,3,4,5]) {
@@ -131,7 +143,8 @@ function KeyBoardBuilder(options)
             sceneKeyBoard.push(blackKey)
         }
         return new KeyBoard({
-            sceneKeyBoard: sceneKeyBoard
+            sceneKeyBoard: sceneKeyBoard,
+            sceneNoteOverlay: sceneNoteOverlay
         })
     }
 
