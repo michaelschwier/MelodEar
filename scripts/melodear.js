@@ -5,10 +5,18 @@
   var lastTimeStamp = null;
   var resources;
   var audioCache = {};
-  var canvas;
   var gamePhase;
   var mouseIsPressed = false;
   var resultsShareText = ""
+
+  screenCanvas = document.getElementById("gameCanvas");
+  screenCanvas.width = 1200
+  screenCanvas.height = 1600
+
+  canvas = document.createElement("canvas")
+  canvas.width = 2400
+  canvas.height = 3200
+
 
   // ----- Beta Test Dialog ---------------------------------------------------------------------
   var betaModal = document.getElementById("betaModal");
@@ -115,6 +123,16 @@
       gameContainer.style.width = '100vw';
       document.documentElement.style.setProperty('--modal-width', '94vw');
     }
+    var clientRect = screenCanvas.getBoundingClientRect();
+    if (clientRect.width < canvas.width / 2) {
+      screenCanvas.width = Math.round(canvas.width / 2)
+      screenCanvas.height = Math.round(canvas.height / 2)
+    }
+    else {
+      screenCanvas.width = canvas.width
+      screenCanvas.height = canvas.height
+    }
+    showFlashNote("" + clientRect.width + " " + clientRect.height + " " + screenCanvas.width + " " + screenCanvas.height, 3000)
   }
 
   // --------------------------------------------------------------------------
@@ -133,7 +151,7 @@
   
   function getCanvasPosition(e)
   {
-    var clientRect = canvas.getBoundingClientRect();
+    var clientRect = screenCanvas.getBoundingClientRect();
     x = e.clientX - clientRect.left;
     y = e.clientY - clientRect.top;
     x *= canvas.width / clientRect.width;
@@ -267,13 +285,17 @@
 
     this.render = function()
     { 
+      var octx = canvas.getContext("2d")
       for (var key in this.scene) {
         if (this.scene[key]) {
           if ("render" in this.scene[key]) {
-            this.scene[key].render(canvas.getContext("2d"));
+            this.scene[key].render(octx);
           }
         }
       }
+      // possibly do one power of 2 downscale for better render quality (see resizeGame)
+      screenCanvas.getContext("2d").drawImage(canvas, 0, 0, canvas.width, canvas.height,
+                                              0, 0, screenCanvas.width, screenCanvas.height);
     }
 
     this.getNextGamePhase = function()
@@ -414,7 +436,11 @@
     var timePassed = getPassedFrameTimeInSeconds(timeStamp);
 
     window.requestAnimationFrame(gameLoop);
+    screenCanvas.getContext("2d").clearRect(0, 0, screenCanvas.width, screenCanvas.height);
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+
+    // screenCanvas.getContext("2d").imageSmoothingQuality = "high"
+    // canvas.getContext("2d").imageSmoothingQuality = "high"
 
     gamePhase.update(timePassed);
     gamePhase.render();
@@ -430,17 +456,13 @@
     }
     document.getElementById("gameContainer").style.backgroundImage="url(\"images/startGame.png\")" 
 
-    canvas = document.getElementById("gameCanvas");
-    canvas.width = 2400;
-    canvas.height = 3200;
-
     gamePhase = new IntroPhase();
 
-    canvas.addEventListener("touchmove", handleTouchMove);
-    canvas.addEventListener("touchstart", handleTouchStart);
-    canvas.addEventListener("mousedown", handleMouseDown);
-    canvas.addEventListener("mouseup", handleMouseUp);
-    canvas.addEventListener("mousemove", handleMouseMove);
+    screenCanvas.addEventListener("touchmove", handleTouchMove);
+    screenCanvas.addEventListener("touchstart", handleTouchStart);
+    screenCanvas.addEventListener("mousedown", handleMouseDown);
+    screenCanvas.addEventListener("mouseup", handleMouseUp);
+    screenCanvas.addEventListener("mousemove", handleMouseMove);
   
     gameLoop();
   }
