@@ -126,7 +126,6 @@
       screenCanvas.width = canvas.width
       screenCanvas.height = canvas.height
     }
-    showFlashNote("RES " + clientRect.width + " " + clientRect.height + " " + screenCanvas.width + " " + screenCanvas.height, 3000)
   }
 
   // --------------------------------------------------------------------------
@@ -494,6 +493,14 @@
   resources.addImage("a4", "images/a4.png");
   resources.addImage("b4", "images/b4.png");
   resources.addImage("c5", "images/c5.png");
+  resources.addImage("c4_key", "images/c4_key.png");
+  resources.addImage("d4_key", "images/d4_key.png");
+  resources.addImage("e4_key", "images/e4_key.png");
+  resources.addImage("f4_key", "images/f4_key.png");
+  resources.addImage("g4_key", "images/g4_key.png");
+  resources.addImage("a4_key", "images/a4_key.png");
+  resources.addImage("b4_key", "images/b4_key.png");
+  resources.addImage("c5_key", "images/c5_key.png");
   resources.addImage("whiteout", "images/whiteout.png")
   resources.addImage("frameBlueNoFill", "images/frameBlueNoFill.png")
   resources.addImage("frameBlueLightFill", "images/frameBlueLightFill.png")

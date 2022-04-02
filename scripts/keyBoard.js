@@ -125,11 +125,7 @@ function KeyBoardBuilder(options)
             var noteHint = new Sprite({
                 x: 90 + (i * 300),
                 y: 2950,
-                width: 120,
-                height: 240,
-                clipX: 50,
-                clipWidth: 200,
-                image: this.resources.getImage(whiteNotes[i])
+                image: this.resources.getImage(whiteNotes[i] + "_key")
             })
             sceneNoteOverlay.push(noteHint)
         }
