@@ -110,10 +110,10 @@ th, td {
 	cursor: pointer;
 }
 
-.flashNote {
+.flashNote, .solutionFlash {
 	position:absolute;
-	top:45%;
-	left:30%;
+	top: 30vh;
+	left: 29%;
 	width: 40%;
 	height: 10%;
 	padding: 10px;
@@ -132,13 +132,31 @@ th, td {
 	animation-duration: 0.4s
 }
 
+.solutionFlash {
+	top: 30vh;
+	left: 19%;
+	width: 60%;
+	height: 15%;
+	z-index: 20;
+	border: 10px solid rgb(28, 28, 28);
+	background-color:rgb(255, 255, 255);
+}
+
+.solutionFlash img {
+	float: left;
+	width: auto;
+	height: auto;
+	max-width: 17%;
+	max-height: 100%;
+  }
+
 @-webkit-keyframes animatefrombottom {
 from {top:100vh; opacity:0} 
-to {top:45%; opacity:1}
+to {top:30vh; opacity:1}
 }
 
 @keyframes animatefrombottom {
 from {top:100vh; opacity:0}
-to {top:45%; opacity:1}
+to {top:30vh; opacity:1}
 }
 

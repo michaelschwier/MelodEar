@@ -374,7 +374,7 @@
     else {
       document.getElementById("resultsTitle").textContent = "Sorry, better luck next time!"
     }
-    content = "<table style=\"margin-left: auto; margin-right: auto;\"><tr><th>Level</th><th>Finished</th><th>Tries</th></tr>"
+    var content = "<table style=\"margin-left: auto; margin-right: auto;\"><tr><th>Level</th><th>Finished</th><th>Tries</th></tr>"
     for (var i = 0; i < 5; i++) {
       if (gameStatus.levelTries[i] > 0) {
         content += "<tr><td>" + (i + 1) + "</td><td>" + (gameStatus.successes[i] ? "Yes" : "No") + "</td><td>" + gameStatus.levelTries[i] + "</td></tr>"
