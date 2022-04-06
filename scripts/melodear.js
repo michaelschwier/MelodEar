@@ -377,10 +377,10 @@
     var content = "<table style=\"margin-left: auto; margin-right: auto;\"><tr><th>Level</th><th>Finished</th><th>Tries</th></tr>"
     for (var i = 0; i < 5; i++) {
       if (gameStatus.levelTries[i] > 0) {
-        content += "<tr><td>" + (i + 1) + "</td><td>" + (gameStatus.successes[i] ? "Yes" : "No") + "</td><td>" + gameStatus.levelTries[i] + "</td></tr>"
+        content += "<tr class=\"" + (gameStatus.successes[i] ? "trpos" : "trneg") + "\"><td>" + (i + 1) + "</td><td>" + (gameStatus.successes[i] ? "Yes" : "No") + "</td><td>" + gameStatus.levelTries[i] + "</td></tr>"
       }
       else {
-        content += "<tr><td>" + (i + 1) + "</td><td>No</td><td>-</td></tr>"
+        content += "<tr class=\"trneg\"><td>" + (i + 1) + "</td><td>No</td><td>-</td></tr>"
       }
     }
     content += "</table>"

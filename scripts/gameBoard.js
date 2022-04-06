@@ -109,6 +109,7 @@ function GameBoard(options)
 
     this.fadeout = function(delay = 0.0)
     {
+        this.setState(States.FadeOut)
         for (var y = 0; y < 5; y++) {
             for (var x = 0; x < this.status.noNotes(); x++) {
                 this.sceneBoard[y][x].fadeout((4-y)*0.05 + (this.status.noNotes()-x)*0.08 + delay)
@@ -151,16 +152,14 @@ function GameBoard(options)
             if (this.userPlayIdx == this.status.noNotes()) {
                 if (this.state == States.RevealingUserNotes) {
                     if (this.playCountDown <= 0) {
-                        if (this.notesMatch(this.status.currTry()-1) || (this.status.currTry() >= 5)) {
-                            this.setState(States.FadeOut)
-                            if (this.status.currTry() >= 5) {
-                                var targetNotes = this.getTargetNotes()
-                                showSolutionFlash(targetNotes, 4000 + (targetNotes.length * 1000))
-                                this.playCountDown = 4 + targetNotes.length + 0.8
-                            }
-                            else {
-                                this.playCountDown = 0.8
-                            }
+                        if (this.notesMatch(this.status.currTry()-1)) {
+                            this.playCountDown = 0.8
+                            this.fadeout()
+                        }
+                        else if (this.status.currTry() >= 5) {
+                            var targetNotes = this.getTargetNotes()
+                            showSolutionFlash(targetNotes, 4000 + (targetNotes.length * 1000))
+                            this.playCountDown = 4 + targetNotes.length + 0.8
                             this.fadeout(this.playCountDown - 0.8)
                         }
                         else {
