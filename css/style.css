@@ -45,11 +45,30 @@ th, td {
 	text-align: center;
 }
 
-.trpos {
+.thspacer {
+	border-bottom:1px solid white;
+}
+
+.tdscore {
+	font-size: xx-large;
+}
+
+.tdavgscore {
+	text-align: left;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.tdavgscorecnt {
+	text-align: right;
+	padding-right: 5px;
+}
+
+.tpos {
 	background-color: rgb(235, 245, 215);
 }
 
-.trneg {
+.tneg {
 	background-color: rgb(255, 235, 230);
 }
 

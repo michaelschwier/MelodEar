@@ -122,4 +122,18 @@ function GameStatus(options={})
             console.log("ERROR in GameStatus.load: ", e)
         }
     }
+
+    this.getScore = function() 
+    {
+        var score = 0
+        for (var i = 0; i < 5; i++) {
+            if (this.successes[i]) {
+                const noNotes = i + 2
+                const maxScore = 5 * noNotes
+                const subtract = Math.min(((this.levelTries[i] - 1) * noNotes), maxScore)
+                score += maxScore - subtract
+            }
+        }
+        return score
+    }
 }

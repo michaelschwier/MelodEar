@@ -374,23 +374,31 @@
     else {
       document.getElementById("resultsTitle").textContent = "Sorry, better luck next time!"
     }
-    var content = "<table style=\"margin-left: auto; margin-right: auto;\"><tr><th>Level</th><th>Finished</th><th>Tries</th></tr>"
+    var content = "<table style=\"margin-left: auto; margin-right: auto;\"><tr><th>Level</th><th>Finished</th><th>Tries</th><th class=\"thspacer\"></th><th colspan=\"3\">Score</th></tr>"
     for (var i = 0; i < 5; i++) {
-      if (gameStatus.levelTries[i] > 0) {
-        content += "<tr class=\"" + (gameStatus.successes[i] ? "trpos" : "trneg") + "\"><td>" + (i + 1) + "</td><td>" + (gameStatus.successes[i] ? "Yes" : "No") + "</td><td>" + gameStatus.levelTries[i] + "</td></tr>"
+      tdclass = " class=\"" + (gameStatus.successes[i] ? "tpos" : "tneg") + "\""
+      content += "<tr>"
+      content += "<td" + tdclass + ">" + (i + 1) + "</td>"
+      content += "<td" + tdclass + ">" + (gameStatus.successes[i] ? "Yes" : "No") + "</td>"
+      content += "<td" + tdclass + ">" + (gameStatus.levelTries[i] > 0 ? gameStatus.levelTries[i] : "-") + "</td>"
+      if (i == 0) {
+        content += "<td rowspan=\"3\"></td><td class=\"tdscore\" rowspan=\"3\" colspan=\"3\">" + gameStatus.getScore() + "</td>"
       }
-      else {
-        content += "<tr class=\"trneg\"><td>" + (i + 1) + "</td><td>No</td><td>-</td></tr>"
+      else if (i == 3) {
+        content += "<td></td><td class=\"tdavgscore\" colspan=\"2\">Recent &#216;:</td><td class=\"tdavgscorecnt\">-</td>"
       }
+      else if (i == 4) {
+        content += "<td></td><td class=\"tdavgscore\" colspan=\"2\">Previous &#216;:</td><td class=\"tdavgscorecnt\">-</td>"
+      }
+        content += "</tr>"
     }
-    content += "</table>"
     document.getElementById("resultsResults").innerHTML = content
 
     uNote = " \u2669"
     uRepLeft = "\u{1D106}"
     uRepRight = " \u{1D107}"
     uTimes = " \u{D7}"
-    resultsShareText = "MelodEar " + gameStatus.gameIdx + " " + noSucesses + "/5\n\n"
+    resultsShareText = "MelodEar " + gameStatus.gameIdx + " Score: " + gameStatus.getScore() + "\n\n"
     for (var levelIdx = 0; levelIdx < 5; levelIdx++) {
       if (gameStatus.successes[levelIdx]) {
         resultsShareText += uRepLeft
