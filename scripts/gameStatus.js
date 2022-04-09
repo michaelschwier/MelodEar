@@ -94,14 +94,8 @@ function GameStatus(options={})
                 return
             }
             var level = parseInt(getCookie("gsLevel"))
-            var levelTries = getCookie("gsLevelTries").split(",")
-            for (var i = 0; i < levelTries.length; i++) {
-                levelTries[i] = parseInt(levelTries[i])
-            }
-            var successes = getCookie("gsSuccesses").split(",")
-            for (var i = 0; i < successes.length; i++) {
-                successes[i] = parseInt(successes[i])
-            }
+            var levelTries = parseIntList(getCookie("gsLevelTries"))
+            var successes = parseIntList(getCookie("gsSuccesses"))
             var userNotes = []
             for (var y = 0; y < this.userNotes.length; y++) {
                 var row = getCookie("gsNotesRow" + y).split(",")

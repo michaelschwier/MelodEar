@@ -302,6 +302,7 @@
     this.gameStatus = new GameStatus({level: startLevel})
     this.gameStatus.load()
     this.gameStatus.save()
+    this.history = new History()
     this.finishedDelay = 1.0;
     this.countdown = null
     GamePhase.call(this, this.levelCreator.getScene(this.gameStatus, this));
@@ -315,13 +316,14 @@
       }
       else {
         this.countdown = new Countdown(this.gameStatus)
-        showResults(this.gameStatus)
+        this.history.add(this.gameStatus)
+        showResults(this.gameStatus, this.history)
       }
     }
 
     this.showResultsScreen = function() {
       if (this.countdown) {
-        showResults(this.gameStatus)
+        showResults(this.gameStatus, this.history)
       }
       else {
         showFlashNote("Finish your current game to show results", 3000)
@@ -358,7 +360,7 @@
   }
 
   // --------------------------------------------------------------------------
-  function showResults(gameStatus)
+  function showResults(gameStatus, history)
   {
     document.getElementById("newGameButton").disabled = true
     newGameButtonWasPressed = false
@@ -385,10 +387,10 @@
         content += "<td rowspan=\"3\"></td><td class=\"tdscore\" rowspan=\"3\" colspan=\"3\">" + gameStatus.getScore() + "</td>"
       }
       else if (i == 3) {
-        content += "<td></td><td class=\"tdavgscore\" colspan=\"2\">Recent &#216;:</td><td class=\"tdavgscorecnt\">-</td>"
+        content += "<td></td><td class=\"tdavgscore\" colspan=\"2\">Recent &#216;:</td><td class=\"tdavgscorecnt\">" + history.getAverageScoreString(1, 11) + "</td>"
       }
       else if (i == 4) {
-        content += "<td></td><td class=\"tdavgscore\" colspan=\"2\">Previous &#216;:</td><td class=\"tdavgscorecnt\">-</td>"
+        content += "<td></td><td class=\"tdavgscore\" colspan=\"2\">Past &#216;:</td><td class=\"tdavgscorecnt\">" + history.getAverageScoreString(16, 26) + "</td>"
       }
         content += "</tr>"
     }
