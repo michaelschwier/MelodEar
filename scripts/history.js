@@ -2,7 +2,7 @@ function History()
 {
     this.gameIndices = parseIntList(getCookie("historyGameIndices"))
     this.scores = parseIntList(getCookie("historyScores"))
-    this.maxHistoryLength = 50
+    this.maxHistoryLength = 30
 
     this.add = function(gameStatus)
     {
@@ -10,7 +10,7 @@ function History()
         if ((this.gameIndices.length == 0) || (gameIdx > this.gameIndices[0])) {
             this.gameIndices.unshift(gameIdx)
             this.scores.unshift(gameStatus.getScore())
-            if (this.gameIndices.length > this.maxHistoryLength) {
+            while (this.gameIndices.length > this.maxHistoryLength) {
                 this.gameIndices.pop()
                 this.scores.pop()
             }
