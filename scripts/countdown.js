@@ -3,9 +3,9 @@ function Countdown(gameStatus)
     var dateTime = getDateTimeInts(gameStatus.date)
     // this.tomorrow = new Date(dateTime[0], dateTime[1], dateTime[2])
     // this.tomorrow.setDate(this.tomorrow.getDate() + 1)
-    // this.tomorrow.setHours(0,0,0,0)
+    // this.tomorrow.setHours(0,0,1,1)
     var minutes = (Math.floor(dateTime[4] / 5) + 1) * 5
-    this.tomorrow = new Date(dateTime[0], dateTime[1], dateTime[2], dateTime[3], minutes, 0)
+    this.tomorrow = new Date(dateTime[0], dateTime[1], dateTime[2], dateTime[3], minutes, 1, 1)
 
     this.updateCountdown = function() 
     {
