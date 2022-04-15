@@ -1,3 +1,5 @@
+var solutionFlashDiv = null
+
 function showFlashNote(message, duration)
 {
     var flashNoteDiv = document.createElement("div")
@@ -9,13 +11,21 @@ function showFlashNote(message, duration)
 
 function showSolutionFlash(targetNotes, duration)
 {
-    var flashNoteDiv = document.createElement("div")
-    flashNoteDiv.setAttribute("class", "solutionFlash")
+    hideSolutionFlash()
+    solutionFlashDiv = document.createElement("div")
+    solutionFlashDiv.setAttribute("class", "solutionFlash")
     content = ""
     for (var note of targetNotes) {
         content += "<img src=\"images/" + note + "_key.png\"/>"
     }
-    flashNoteDiv.innerHTML = content
-    setTimeout(function(){flashNoteDiv.remove();}, duration)
-    document.body.appendChild(flashNoteDiv)
+    solutionFlashDiv.innerHTML = content
+    document.body.appendChild(solutionFlashDiv)
+}
+
+function hideSolutionFlash()
+{
+    if (solutionFlashDiv) {
+        solutionFlashDiv.remove()
+        solutionFlashDiv = null
+    }
 }
