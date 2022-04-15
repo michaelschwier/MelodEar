@@ -317,7 +317,6 @@
         this.scene.gameBoard.fadeout()
       }
       else { // Game Over
-        this.countdown = new Countdown(this.gameStatus)
         this.history.add(this.gameStatus)
         if (success) {
           this.showResultsDelay = 0.8
@@ -351,6 +350,7 @@
       if (this.showResultsDelay > 0) {
         this.showResultsDelay -= frameTime
         if (this.showResultsDelay <= 0) {
+          this.countdown = new Countdown(this.gameStatus)          
           this.showResultsScreen()
         }
       }
