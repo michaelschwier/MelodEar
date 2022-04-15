@@ -90,7 +90,7 @@ function GameStatus(options={})
         try {
             var date = getCookie("gsDate")
             var gameIdx = parseInt(getCookie("gsGameIdx"))
-            if (gameIdx != getGameIndexByDateTime(getCurrLocalDateTimeString())) {
+            if (gameIdx != this.gameIdx) {
                 return
             }
             var level = parseInt(getCookie("gsLevel"))
