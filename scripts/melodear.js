@@ -303,7 +303,8 @@
     this.gameStatus.load()
     this.gameStatus.save()
     this.history = new History()
-    this.finishedDelay = 1.0;
+    this.nextLevelStartDelay = -1.0;
+    this.showResultsDelay = -1.0
     this.countdown = null
     GamePhase.call(this, this.levelCreator.getScene(this.gameStatus, this));
 
@@ -312,12 +313,20 @@
       if (success && (this.gameStatus.level < 5)) {
         this.gameStatus.nextLevel()
         this.gameStatus.save()
-        this.scene = this.levelCreator.getScene(this.gameStatus, this)
+        this.nextLevelStartDelay = 0.8
+        this.scene.gameBoard.fadeout()
       }
-      else {
+      else { // Game Over
         this.countdown = new Countdown(this.gameStatus)
         this.history.add(this.gameStatus)
-        showResults(this.gameStatus, this.history)
+        if (success) {
+          this.showResultsDelay = 0.8
+        }
+        else {
+          var targetNotes = this.scene.gameBoard.getTargetNotes()
+          showSolutionFlash(targetNotes, 4000 + (targetNotes.length * 1000))
+          this.showResultsDelay = 4 + targetNotes.length + 0.8
+        }
       }
     }
 
@@ -333,6 +342,18 @@
     this.GamePhase_update = this.update;
     this.update = function(frameTime)
     {
+      if (this.nextLevelStartDelay > 0) {
+        this.nextLevelStartDelay -= frameTime
+        if (this.nextLevelStartDelay <= 0) {
+          this.scene = this.levelCreator.getScene(this.gameStatus, this)
+        }
+      }
+      if (this.showResultsDelay > 0) {
+        this.showResultsDelay -= frameTime
+        if (this.showResultsDelay <= 0) {
+          this.showResultsScreen()
+        }
+      }
       if (this.countdown) {
         this.countdown.updateCountdown()
       }
@@ -341,8 +362,9 @@
 
     this.getNextGamePhase = function()
     {
-      if (this.countdown && this.countdown.expired()) {
+      if (this.countdown && this.countdown.expired() && (this.gameStatus.gameIdx < getGameIndexByDateTime(getCurrLocalDateTimeString()))) {
         if (newGameButtonWasPressed || (resultsModal.style.display == "none")) {
+          hideSolutionFlash()
           return new MainGamePhase(1)
         }
       }

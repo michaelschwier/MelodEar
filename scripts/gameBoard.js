@@ -7,7 +7,6 @@ const States = Object.freeze({
     Idle:               "Idle",
     UserInput:          "UserInput",
     UserInputDone:      "UserInputDone",
-    FadeOut:            "FadeOut",
     Finished:           "Finished"
 })
 
@@ -109,10 +108,9 @@ function GameBoard(options)
 
     this.fadeout = function(delay = 0.0)
     {
-        this.setState(States.FadeOut)
         for (var y = 0; y < 5; y++) {
-            for (var x = 0; x < this.status.noNotes(); x++) {
-                this.sceneBoard[y][x].fadeout((4-y)*0.05 + (this.status.noNotes()-x)*0.08 + delay)
+            for (var x = 0; x < this.sceneBoard[y].length; x++) {
+                this.sceneBoard[y][x].fadeout((4 - y) * 0.05 + (this.sceneBoard[y].length - x) * 0.08 + delay)
             }
         }
     }
@@ -153,14 +151,14 @@ function GameBoard(options)
                 if (this.state == States.RevealingUserNotes) {
                     if (this.playCountDown <= 0) {
                         if (this.notesMatch(this.status.currTry()-1)) {
-                            this.playCountDown = 0.8
-                            this.fadeout()
+                            this.setState(States.Finished)
+                            this.status.levelFinished(true)
+                            this.callback.levelFinished(true)
                         }
                         else if (this.status.currTry() >= 5) {
-                            var targetNotes = this.getTargetNotes()
-                            showSolutionFlash(targetNotes, 4000 + (targetNotes.length * 1000))
-                            this.playCountDown = 4 + targetNotes.length + 0.8
-                            this.fadeout(this.playCountDown - 0.8)
+                            this.setState(States.Finished)
+                            this.status.levelFinished(false)
+                            this.callback.levelFinished(false)
                         }
                         else {
                             this.sceneWhiteout.shift()
@@ -170,20 +168,6 @@ function GameBoard(options)
                 }
                 else {
                     this.setState(States.Idle)
-                }
-            }
-        }
-        else if (this.state == States.FadeOut) {
-            if (this.playCountDown <= 0) {
-                if (this.notesMatch(this.status.currTry()-1)) {
-                    this.setState(States.Finished)
-                    this.status.levelFinished(true)
-                    this.callback.levelFinished(true)
-                }
-                else if (this.status.currTry() >= 5) {
-                    this.setState(States.Finished)
-                    this.status.levelFinished(false)
-                    this.callback.levelFinished(false)
                 }
             }
         }
