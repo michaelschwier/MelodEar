@@ -432,7 +432,7 @@
         resultsShareText += uRepRight + uTimes + gameStatus.levelTries[levelIdx] + "\n"
       }
     }
-    resultsShareText += "\nhttps://www.melodear.net"
+    resultsShareText += "\nmelodear.net"
     resultsModal.style.display = "block"
   }
 
