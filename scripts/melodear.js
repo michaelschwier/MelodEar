@@ -422,7 +422,7 @@
     uRepLeft = "\u{1D106}"
     uRepRight = " \u{1D107}"
     uTimes = " \u{D7}"
-    resultsShareText = "MelodEar " + gameStatus.gameIdx + " Score: " + gameStatus.getScore() + "\n\n"
+    resultsShareText = "MelodEar " + gameStatus.gameIdx + "  Score: " + gameStatus.getScore() + "\n\n"
     for (var levelIdx = 0; levelIdx < 5; levelIdx++) {
       if (gameStatus.successes[levelIdx]) {
         resultsShareText += uRepLeft
