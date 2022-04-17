@@ -56,14 +56,14 @@ function getCurrLocalDateTimeString()
 
 function getGameIndexByDateTime(dateTimeString)
 {
-  // const oneDay = 24 * 60 * 60 * 1000;
-  const oneDay = 5 * 60 * 1000;
+  const oneDay = 24 * 60 * 60 * 1000;
+  // const oneDay = 5 * 60 * 1000;
   const referenceDate = new Date(2022, 3, 18); // April 18th (months are 0 indexed in JS)
   const dateTime = getDateTimeInts(dateTimeString)
-  // const date = new Date(dateTime[0], dateTime[1], dateTime[2])
-  const date = new Date(dateTime[0], dateTime[1], dateTime[2], dateTime[3], dateTime[4], dateTime[5])
-  // const diffDays = Math.round((date - referenceDate) / oneDay)
-  const diffDays = Math.floor((date - referenceDate) / oneDay)
+  const date = new Date(dateTime[0], dateTime[1], dateTime[2])
+  // const date = new Date(dateTime[0], dateTime[1], dateTime[2], dateTime[3], dateTime[4], dateTime[5])
+  const diffDays = Math.round((date - referenceDate) / oneDay)
+  // const diffDays = Math.floor((date - referenceDate) / oneDay)
   return diffDays
 }
 
