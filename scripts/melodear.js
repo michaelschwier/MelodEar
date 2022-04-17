@@ -19,15 +19,6 @@
   screenCanvas.height = canvas.height
 
 
-  // ----- Beta Test Dialog ---------------------------------------------------------------------
-  var betaModal = document.getElementById("betaModal");
-  var betaAcceptButton = document.getElementById("betaAcceptButton")
-  betaAcceptButton.onclick = function(event) {
-    event.stopImmediatePropagation()
-    setCookie("showBetaTestNotice", "True", 1)
-    betaModal.style.display = "none";
-  }
-
   // ----- Info Dialog ---------------------------------------------------------------------
   var infoModal = document.getElementById("infoModal");
   infoModal.onclick = function() {
@@ -501,10 +492,6 @@
   resizeGame();
   window.addEventListener('resize', resizeGame);
   window.addEventListener('orientationchange', resizeGame);
-
-  if (!getCookie("showBetaTestNotice")) {
-    betaModal.style.display = "block"
-  }
 
   if (!getCookie("cookiesAllowed")) {
     cookiePolicyModal.style.display = "block";
