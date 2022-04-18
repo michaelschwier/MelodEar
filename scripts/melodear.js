@@ -532,7 +532,7 @@
   resources.addImage("playTargetInactive", "images/playTargetInactive.png")
   resources.addImage("playUser", "images/playUser.png")
   resources.addImage("playUserInactive", "images/playUserInactive.png")
-  resources.addImage("title", "images/title.png")
+  resources.addImage("title", "images/title_v1.png")
   resources.addImage("help", "images/help.png")
   resources.addImage("info", "images/info.png")
   resources.addImage("results", "images/results.png")
