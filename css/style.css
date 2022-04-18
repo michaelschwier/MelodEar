@@ -139,7 +139,7 @@ th, td {
 	cursor: pointer;
 }
 
-.flashNote, .solutionFlash {
+.flashNote, .flashNoteOnTop, .solutionFlash {
 	position:absolute;
 	top: 20vh;
 	left: 29%;
@@ -159,6 +159,10 @@ th, td {
 	-webkit-animation-duration: 0.4s;
 	animation-name: animatefrombottom;
 	animation-duration: 0.4s
+}
+
+.flashNoteOnTop {
+	z-index: 40;
 }
 
 .solutionFlash {

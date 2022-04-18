@@ -49,7 +49,7 @@
       navigator.share(shareRecord)
     }
     else {
-      console.log("No mobile or no navigator.share, sharing to clipboard.")
+      showFlashNote("Results copied to clipboard", 3000, "flashNoteOnTop")
       navigator.clipboard.writeText(resultsShareText);
     }
   }

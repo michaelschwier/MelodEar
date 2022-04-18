@@ -1,9 +1,9 @@
 var solutionFlashDiv = null
 
-function showFlashNote(message, duration)
+function showFlashNote(message, duration, style="flashNote")
 {
     var flashNoteDiv = document.createElement("div")
-    flashNoteDiv.setAttribute("class","flashNote")
+    flashNoteDiv.setAttribute("class", style)
     flashNoteDiv.innerHTML = message
     setTimeout(function(){flashNoteDiv.remove();}, duration)
     document.body.appendChild(flashNoteDiv)
