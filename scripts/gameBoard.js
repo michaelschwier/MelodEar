@@ -93,7 +93,7 @@ function GameBoard(options)
                 this.setState(States.UserInput)
             }
             else {
-                showFlashNote("Start your guess with the revealed note in the first slot", 3000)
+                showFlashNote("Start your guess with the given note in the first slot", 3000)
             }
         }
         else if (this.state == States.UserInput) {
