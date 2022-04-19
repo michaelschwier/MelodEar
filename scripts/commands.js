@@ -42,6 +42,13 @@ function NotePressedCommand(receiver, note) {
   }
 }
 
+function BlackKeyPressedCommand() {
+  this.execute = function() 
+  {
+    showFlashNote("Only white keys are active", 3000)
+  }
+}
+
 function PlayTargetNotesCommand(receiver) {
   this.receiver = receiver
 

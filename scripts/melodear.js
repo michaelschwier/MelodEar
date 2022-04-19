@@ -527,7 +527,7 @@
   resources.addImage("frameGreenFill", "images/frameGreenFill.png")
   resources.addImage("frameRedFill", "images/frameRedFill.png")
   resources.addImage("keyWhite", "images/keyWhite.png")
-  resources.addImage("keyBlack", "images/keyBlack.png")
+  resources.addImage("keyBlack", "images/keyBlack_v1.png")
   resources.addImage("playTarget", "images/playTarget.png")
   resources.addImage("playTargetInactive", "images/playTargetInactive.png")
   resources.addImage("playUser", "images/playUser.png")

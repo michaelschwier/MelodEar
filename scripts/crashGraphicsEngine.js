@@ -526,6 +526,28 @@ function Button(options, command)
   }
 }
 
+function WhiteKeyButton(options, command, excludeAreas)
+{
+  Button.call(this, options, command)
+  this.excludeAreas = excludeAreas
+
+  this.handleMouseDown = function(pos)
+  { 
+    if (this.isHit(pos.canvasX, pos.canvasY)) {
+      excludeIsHit = false
+      for (a of this.excludeAreas) {
+        if (a.isHit(pos.canvasX, pos.canvasY)) {
+          excludeIsHit = true
+        }
+      }
+      if (!excludeIsHit) {
+        this.buttonReleaseCountDown = this.buttonReleaseTime
+        this.command.execute()
+      }
+    }
+  }
+}
+
 function ButtonLimitedClicks(options, command)
 {
   Button.call(this, options, command)

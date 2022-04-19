@@ -112,15 +112,29 @@ function KeyBoardBuilder(options)
             x: 900,
             y: 2420
         }))
+        // actual keyboard
+        var blackKeyList = []
+        var keyImage = this.resources.getImage("keyBlack")
+        for (var i of [0,1,3,4,5]) {
+            var blackKey = new Button({
+                x: 190 + (i * 300),
+                y: 2600,
+                image: keyImage
+                },
+                new BlackKeyPressedCommand())
+            blackKeyList.push(blackKey)
+        }
+        
         var whiteNotes = ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"]
         keyImage = this.resources.getImage("keyWhite")
         for (var i = 0; i < 8; i++) {
-            var whiteKey = new Button({
+            var whiteKey = new WhiteKeyButton({
                     x: i * 300,
                     y: 2600,
                     image: keyImage
                 }, 
-                new NotePressedCommand(commandReceiver, whiteNotes[i]))
+                new NotePressedCommand(commandReceiver, whiteNotes[i]),
+                blackKeyList)
             sceneKeyBoard.push(whiteKey)
             var noteHint = new Sprite({
                 x: 90 + (i * 300),
@@ -129,15 +143,11 @@ function KeyBoardBuilder(options)
             })
             sceneNoteOverlay.push(noteHint)
         }
-        keyImage = this.resources.getImage("keyBlack")
-        for (var i of [0,1,3,4,5]) {
-            var blackKey = new Sprite({
-                x: 190 + (i * 300),
-                y: 2600,
-                image: keyImage
-                })
-            sceneKeyBoard.push(blackKey)
+
+        for (b of blackKeyList) {
+            sceneKeyBoard.push(b)
         }
+        
         return new KeyBoard({
             sceneKeyBoard: sceneKeyBoard,
             sceneNoteOverlay: sceneNoteOverlay
